@@ -52,41 +52,31 @@ def backtrack(路径, 选择列表):
 
 ```go
 func permute(nums []int) [][]int {
-    var res [][]int
-    var backtrack func([]int)
-  var track []int
+	var res [][]int
 
-    backtrack = func(track []int) {
-        if len(track) == len(nums) {
-            //注意这里需要 copy 一个 slice，不然因为引用的关系， res append 会有问题
-            tmp := make([]int, len(track))
-            copy(tmp, track)
-            res = append(res, tmp)
-            return
-        }
-        for i := range nums {
-            flag := false
-            //这里需要遍历 track 来判断是否已经添加 nums[i]， track 即是标记数组
-            for j := range track {
-                //如果 track 数组里已经有 nums[i] 了那么跳过后面的操作
-                if track[j] == nums[i] {
-                    flag = true
-                    break
-                }
-            }
-            if flag {
-                continue
-            }
-            track = append(track, nums[i])
-            //开始下一步决策树
-            backtrack(track)
-            //回溯，将上一次添加的 nums[i] 去掉，比如 nums = [1,2,3]，第一次从 1 开始遍历决策树，回溯就把 1 去掉，从 2 开始遍历决策树，依此类推。
-            track = track[:len(track)-1]
-        }
-    }
+	n := len(nums)
+	var backtrack func([]int, map[int]bool)
+	backtrack = func(track []int, visited map[int]bool) {
+		if n == len(track) {
+			tmp := make([]int, n)
+			copy(tmp, track)
+			res = append(res, tmp)
+			return
+		}
 
-    backtrack(track)
-    return res
+		for i := range nums {
+			if !visited[i] {
+				track = append(track, nums[i])
+				visited[i] = true
+				backtrack(track, visited)
+				track = track[:len(track)-1]
+				visited[i] = false
+			}
+		}
+	}
+	visited := make(map[int]bool)
+	backtrack([]int{}, visited)
+	return res
 }
 ```
 
@@ -96,7 +86,7 @@ func permute(nums []int) [][]int {
 
 如果 track 的长度小于 nums，如果 track 里没有该元素，那么就将遍历到的 nums\[i] 加入到 track 中，接着递归，然后下一步就是撤销上一步的操作，这和我们的算法思路是一样的，即如果这次从 1 开始遍历，那么下次就会把 1 从 track 中去掉，track 的第一个元素就是 2 了。即决策树选择其他可能性。
 
-当然在 backtrack 参数中加一个 visited 数组，不用每次都遍历 track 来判断是否存在该元素。
+然后在 backtrack 参数中加一个 visited map，不用每次都遍历 track 来判断是否存在该元素。
 
 代码模板可以用上面那套，或者自己简化再总结出自己喜欢的模板，适合自己的才是最好的。
 
