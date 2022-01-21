@@ -12,7 +12,7 @@
 
 看定义可能不太直观，直接看图。
 
-<img src="../../../.gitbook/assets/heap_1.png" alt="complete_tree" style="zoom:50%;" />
+<img src="../../../.gitbook/assets/heap_1.png" alt="heap_1"  />
 
 来自[维基百科](https://zh.wikipedia.org/wiki/%E4%BA%8C%E5%8F%89%E6%A0%91#%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91)。其实完全二叉树就是一种从左到右排开的二叉树，而完美二叉树（又叫满二叉树）就是每个根节点都有 2 个左右子节点，即字面意义“完美二叉树”。
 
@@ -58,7 +58,7 @@ right(i)  = 2i + 2
 
 看下图对堆的存储更清晰：
 
-<img src="../../../.gitbook/assets/heap_2.png" alt="complete_tree"  />
+<img src="../../../.gitbook/assets/heap_2.png" alt="heap_2"  />
 
 而在堆中，为了维护最大堆或最小堆的特性，在增加或删除元素的时候都需要重新堆结构，来维持堆的特性，在 go 的源码里分别是 `up` 和 `down` 两个函数来处理。
 
