@@ -12,6 +12,8 @@
   * [链表初阶](leetcode-shua-ti/lian-biao/lian-biao-jian-dan-ti.md)
   * [链表进阶](leetcode-shua-ti/lian-biao/lian-biao-bi-zhi-bi-hui.md)
   * [链表高阶](leetcode-shua-ti/lian-biao/lian-biao-jin-jie.md)
+* [数组](leetcode-shua-ti/shu-zu/README.md)
+  * [滑动窗口](leetcode-shua-ti/shu-zu/hua-dong-chuang-kou.md)
 * [动态规划](leetcode-shua-ti/dong-tai-gui-hua/README.md)
   * [动态规划基础](leetcode-shua-ti/dong-tai-gui-hua/ji-chu-dong-tai-gui-hua.md)
   * [子序列问题](leetcode-shua-ti/dong-tai-gui-hua/zi-xu-lie-wen-ti.md)
