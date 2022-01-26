@@ -105,4 +105,117 @@ Go 的标准库文档里对堆和优先队列有详细的例子解释，通俗�
 
 [container/heap - 示例：优先队列](http://cngolib.com/container-heap.html)
 
+这里整理一下整数堆和优先队列的模板代码：
+
+```go
+package main
+
+import (
+	"container/heap"
+	"fmt"
+)
+
+func main() {
+	h := &IntHeap{1, 3, 5}
+	heap.Init(h)
+	heap.Push(h, 2)
+	fmt.Printf("minimum: %d\n", (*h)[0])
+	for h.Len() > 0 {
+		fmt.Printf("%d ", heap.Pop(h))
+	}}
+
+// IntHeap 整数最大堆模板
+type IntHeap []int
+func (h IntHeap) Len() int { return len(h) }
+func (h IntHeap) Less(i, j int) bool { return h[i] > h[j] }
+func (h IntHeap) Swap(i, j int) { h[i], h[j] = h[j], h[i] }
+
+func (h *IntHeap) Push(x interface{}) {
+	*h = append(*h, x.(int))
+}
+
+func (h *IntHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[:n-1]
+	return x
+}
+
+
+type Frequency struct {
+	value int
+	priority int
+}
+
+// PQ 优先队列模板代码
+type PQ []Frequency
+
+func (p PQ) Len() int { return len(p) }
+func (p PQ) Less(i, j int) bool { return p[i].priority < p[j].priority }
+func (p PQ) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
+
+func (p *PQ) Push(x interface{}) {
+	*p = append(*p, x.(Frequency))
+}
+
+func (p *PQ) Pop() interface{} {
+	old := *p
+	n := len(old)
+	x := old[n-1]	
+	*p = old[:n-1]
+  /*
+  这里也可以写成这样：
+  n := len(*p)
+  x := (*p)[n-1]
+	*p = (*p)[:n-1]
+  */
+	return x
+}
+```
+
+要注意的是，在 main 函数里调用自己的堆时需要使用以下函数：
+
+```go
+heap.Init(h)
+heap.Push(h, 2)
+heap.Pop(h)
+```
+
+不能直接调用 h.Push() 或 h.Pop()，因为实际上你并没有实现堆的逻辑，而需要通过标准库里的堆来实现逻辑，看一下上面三个函数的源代码：
+
+```go
+// Init establishes the heap invariants required by the other routines in this package.
+// Init is idempotent with respect to the heap invariants
+// and may be called whenever the heap invariants may have been invalidated.
+// The complexity is O(n) where n = h.Len().
+func Init(h Interface) {
+	// heapify
+	n := h.Len()
+	for i := n/2 - 1; i >= 0; i-- {
+		down(h, i, n)
+	}
+}
+
+// Push pushes the element x onto the heap.
+// The complexity is O(log n) where n = h.Len().
+func Push(h Interface, x interface{}) {
+	h.Push(x)
+	up(h, h.Len()-1)
+}
+
+// Pop removes and returns the minimum element (according to Less) from the heap.
+// The complexity is O(log n) where n = h.Len().
+// Pop is equivalent to Remove(h, 0).
+func Pop(h Interface) interface{} {
+	n := h.Len() - 1
+	h.Swap(0, n)
+	down(h, 0, n)
+	return h.Pop()
+}
+
+```
+
+所以要使用标准库的 heap 来进行初始化、push 和 pop 等操作。
+
 这篇先了解一下堆的基础，下篇文章开始练习 LeetCode 上的一些题目。
