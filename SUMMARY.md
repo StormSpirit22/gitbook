@@ -17,6 +17,7 @@
   * [栈和队列](leetcode-shua-ti/shu-zu/zhan-duilie.md)
   * [二分搜索](leetcode-shua-ti/shu-zu/binary-search.md)
   * [前缀和&差分数组](leetcode-shua-ti/shu-zu/prefix-sum.md)
+  * [排序](leetcode-shua-ti/shu-zu/sort.md)
 * [动态规划](leetcode-shua-ti/dong-tai-gui-hua/README.md)
   * [动态规划基础](leetcode-shua-ti/dong-tai-gui-hua/ji-chu-dong-tai-gui-hua.md)
   * [子序列问题](leetcode-shua-ti/dong-tai-gui-hua/zi-xu-lie-wen-ti.md)
