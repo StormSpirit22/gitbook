@@ -6,6 +6,8 @@
 
 [MySQL事务隔离级别和MVCC](https://juejin.cn/post/6844903808376504327)
 
+等。
+
 ## 数据的存储
 
 在 InnoDB 存储引擎中，所有的数据都被**逻辑地**存放在表空间中，表空间（tablespace）是存储引擎中最高的存储逻辑单位，在表空间的下面又包括段（segment）、区（extent）、页（page） 。
@@ -65,7 +67,7 @@ InnoDB引擎会把索引key值为13的节点标记为已删除，它并不会回
 
 下面介绍的几种收缩表空间的方法，虽然方法不同，但是基本的原理都是通过重建表的形式来达到目的。
 
-* truntace table 表名
+* truncate table 表名
 
 此操作等于 `drop + create`，先删除表，然后再创建一个同名的新表，当然，再执行 `truncate table` 命令之前需要先保存一份旧表的数据， 命令执行完成之后，再把这份数据导入新表
 
@@ -204,7 +206,7 @@ CREATE TABLE users(
 
 #### Next-Key Lock
 
-它是记录锁和记录前的间隙锁的结合，在 `users` 表中有以下记录：
+它是记录锁和间隙锁的结合，在 `users` 表中有以下记录：
 
 ```sql
 +------|-------------|--------------|-------+
@@ -233,7 +235,17 @@ CREATE TABLE users(
 
 当我们更新一条记录，比如 `SELECT * FROM users WHERE age = 30 FOR UPDATE;`，InnoDB 不仅会在范围 `(21, 30]` 上加 Next-Key 锁，还会在这条记录后面的范围 `(30, 40]` 加间隙锁，所以插入 `(21, 40]` 范围内的记录都会被锁定（非唯一索引的情况）。
 
-Next-Key 锁的作用其实是在当前读的情况下解决幻读的问题（具体可以看后文 幻读问题）。
+Next-Key 锁的作用其实是在当前读的情况下解决幻读的问题（具体可以看后文幻读问题）。
+
+总结：
+
+1. Record Lock：单个行记录上的锁。
+
+2. Gap Lock：间隙锁，锁定一个范围，但不包括记录本身。GAP锁的目的，是为了防止同一事务的两次当前读，出现幻读的情况。
+
+3. Next-Key Lock：1+2，锁定一个范围，并且锁定记录本身。对于行的查询，都是采用该方法，主要目的是解决幻读的问题。
+
+这里没懂没关系，后面文章会再详细介绍。
 
 ### 死锁
 
@@ -255,7 +267,7 @@ ACID：
 四种隔离级别：`READ UNCOMMITED`、`READ COMMITED`、`REPEATABLE READ` 和 `SERIALIZABLE`；每个事务的隔离级别其实都比上一级多解决了一个问题：
 
 * `RAED UNCOMMITED`：使用查询语句不会加锁，可能会读到未提交的行（脏读）；
-* `READ COMMITED`：只对记录加记录锁，而不会在记录之间加间隙锁，所以允许新的记录插入到被锁定记录的附近，所以再多次使用查询语句时，可能得到不同的结果（不可重复读）；
+* `READ COMMITED`：允许不可重复读，但不允许脏读。这可以通过“瞬间共享读锁”和“排他写锁”实现。读取数据的事务允许其他事务继续访问该行数据，但是未提交的写事务将会禁止其他事务访问该行。
 * `REPEATABLE READ`：多次读取同一范围的数据会返回第一次查询的快照，不会返回不同的数据行，但是可能发生幻读（Phantom Read）；
 * `SERIALIZABLE`：InnoDB 隐式地将全部的查询语句加上**共享锁**，解决了幻读的问题；
 
@@ -281,7 +293,7 @@ MySQL 中默认的事务隔离级别就是 `REPEATABLE READ`。
 
 **Undo Log**
 
-回滚日志（undo log ）用来**记录事务进行的修改**，存储的是老版本数据，能够在发生错误或者用户执行 `ROLLBACK` 时提供回滚相关的信息，回滚日志必须先于数据持久化到磁盘上。undo log 是逻辑日志，只会按照日志**逻辑地**将数据库中的修改撤销掉看，可以**理解**为，我们在事务中使用的每一条 `INSERT` 都对应了一条 `DELETE`，每一条 `UPDATE` 也都对应一条相反的 `UPDATE` 语句。
+回滚日志（undo log ）用来**记录事务进行的修改**，存储的是老版本数据，能够在发生错误或者用户执行 `ROLLBACK` 时提供回滚相关的信息，回滚日志必须先于数据持久化到磁盘上。undo log 是逻辑日志，只会按照日志**逻辑地**将数据库中的修改撤销掉看，可以理解为，我们在事务中使用的每一条 `INSERT` 都对应了一条 `DELETE`，每一条 `UPDATE` 也都对应一条相反的 `UPDATE` 语句。
 
 Undo Log 用来保证事务的原子性。
 
@@ -320,7 +332,7 @@ MySQL 整体来看，其实就有两块：一块是 Server 层，它主要做的
 　这两种日志有以下三点不同。
 
 1. redo log 是 InnoDB 引擎特有的；binlog 是 MySQL 的 Server 层实现的，所有引擎都可以使用。
-2. redo log 是物理日志，记录的是 “在某个数据页上做了什么修改”；binlog 是逻辑日志，statement模式下记录的是sql语句，row模式下记录的是更改前后的数据，。
+2. redo log 是物理日志，记录的是 “在某个数据页上做了什么修改”；binlog 是逻辑日志，statement模式下记录的是sql语句，row模式下记录的是更改前后的数据。
 3. redo log 是循环写的，空间固定会用完；binlog 是可以追加写入的。“追加写” 是指 binlog 文件写到一定大小后会切换到下一个，并不会覆盖以前的日志。
 
 update 语句时的内部流程：
@@ -355,11 +367,19 @@ update 语句时的内部流程：
 
 binlog 可以用来归档/主从复制（备份+日志可以恢复到任意时刻）。重启恢复是使用 redo log + bin log
 
-日志采用两阶段： 1）先写入内存， 在 redo log 中写入日志信息，状态为 prepare 2 ）写 binlog 3） redo log 改为 commit 状态。 当在 2 之前崩溃时，重启恢复：后发现没有 commit ，没有 binlog ，回滚。备份恢复：没有 binlog 。一致 当在 3 之前崩溃，重启恢复：**虽没有 commit，但满足 prepare 和 binlog 完整，所以重启后会自动 commit**。
+日志采用两阶段：
+
+1.  先写入内存， 在 redo log 中写入日志信息，状态为 prepare。
+2.  写 binlog 。
+3.   redo log 改为 commit 状态。 
+
+当在 2 之前崩溃时，重启恢复后发现没有 commit ，也没有 binlog ，回滚。备份恢复：没有 binlog 。一致。
+
+当在 3 之前崩溃，重启恢复：**虽没有 commit，但满足 prepare 和 binlog 完整，所以重启后会自动 commit**。
 
 binlog 日志只用于归档，只依靠 binlog 是没有 crash-safe 能力的。但只有 redo log 也不行，因为 redo log 是 InnoDB 特有的，且日志上的记录落盘后会被覆盖掉。因此需要 binlog 和 redo log 二者同时记录，才能保证当数据库发生宕机重启时，数据不会丢失。
 
-\\
+
 
 ### 版本链
 
@@ -367,7 +387,7 @@ Innodb 的引擎，聚簇索引记录中都包含两个必要的隐藏列：
 
 `trx_id`：每次对某条聚簇索引记录进行改动时，都会把对应的事务id赋值给`trx_id`隐藏列。
 
-`roll_pointer`：每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到`undo日志`中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。
+`roll_pointer`：每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到**undo日志**中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。
 
 （其实还有个 row\_id – 单调递增的行 ID，他就是 AUTO\_INCREMENT 的主键 ID。row\_id并不是必要的，我们创建的表中有主键或者非NULL唯一键时都不会包含row\_id列。）
 
@@ -386,27 +406,103 @@ Innodb 的引擎，聚簇索引记录中都包含两个必要的隐藏列：
 * `min_trx_id`：该值代表生成`readview`时`m_ids`中的最小值。
 *   `max_trx_id`：该值代表生成`readview`时系统中应该分配给下一个事务的id值。
 
-    > 小贴士： 注意max\_trx\_id并不是m\_ids中的最大值，事务id是递增分配的。比方说现在有id为1，2，3这三个事务，之后id为3的记录提交了。那么一个新的读事务在生成readview时，m\_ids就包括1和2，min\_trx\_id的值就是1，max\_trx\_id的值就是4。
+    >  注意max\_trx\_id并不是m\_ids中的最大值，事务id是递增分配的。比方说现在有id为1，2，3这三个事务，之后id为3的记录提交了。那么一个新的读事务在生成readview时，m\_ids就包括1和2，min\_trx\_id的值就是1，max\_trx\_id的值就是4。
 
 所以判断可见性的步骤就是：
 
-* 如果记录的`trx_id`列小于`min_trx_id`，说明肯定可见。
+* 如果记录的`trx_id`列小于`min_trx_id`，说明肯定可见（已经提交，可见）。
 * 如果记录的`trx_id`列大于`max_trx_id`，说明肯定不可见。
-* 如果记录的`trx_id`列在`min_trx_id`和`max_trx_id`之间，就要看一下该`trx_id`在不在`m_ids`列表中，如果在，说明不可见，否则可见。
+* 如果记录的`trx_id`列在`min_trx_id`和`max_trx_id`之间，就要看一下该`trx_id`在不在`m_ids`列表中，如果在，说明不可见（还在执行，就不可见），否则可见。
 
 如果某个版本的数据对当前事务不可见的话，那就顺着版本链找到下一个版本的数据，继续按照上边的步骤判断可见性，依此类推，直到版本链中的最后一个版本，如果最后一个版本也不可见的话，那么就意味着该条记录对该事务不可见，查询结果就不包含该记录。
 
 在MySQL中，READ COMMITTED 和 REPEATABLE READ 隔离级别的的一个非常大的区别就是它们创建 ReadView 的**时机不同**。
 
-RC 在每次读取数据前**都会创建**一个 ReadView（这种机制从而也造成了 RC 不可重复读的问题）， 而 RR 在第一次读取数据时会创建一个 ReadView，之后就**不会重复创建**了。
+RC 在每次读取数据前**都会创建**一个 ReadView（这种机制从而也造成了 RC 不可重复读的问题）， 而 RR 在第一次读取数据时会创建一个 ReadView，之后就**不会重复创建**了（即快照）。
 
 ### MVCC总结
 
-从上边的描述中我们可以看出来，所谓的 MVCC（Multi-Version Concurrency Control ，多版本并发控制）指的就是在使用 READ COMMITTD、REPEATABLE READ 这两种隔离级别的事务在执行普通的 SEELCT 操作时访问记录的版本链的过程，这样子可以使不同事务的读-写、写-读操作并发执行，从而提升系统性能。READ COMMITTD、REPEATABLE READ这两个隔离级别的一个很大不同就是生成ReadView 的时机不同，READ COMMITTD在每一次进行普通 SELECT（即不加 lock in share mode 或 for update 的 select） 操作前都会生成一个 ReadView，而 REPEATABLE READ 只在第一次进行普通 SELECT 操作前生成一个 ReadView，之后的查询操作都重复这个 ReadView 就好了。
+从上边的描述中我们可以看出来，所谓的 MVCC（Multi-Version Concurrency Control ，多版本并发控制）指的就是在使用 READ COMMITTD、REPEATABLE READ 这两种隔离级别的事务在执行普通的 SEELCT 操作时访问记录的版本链的过程，这样可以使不同事务的读-写、写-读操作并发执行，从而提升系统性能。READ COMMITTD、REPEATABLE READ这两个隔离级别的一个很大不同就是生成ReadView 的时机不同，READ COMMITTD在每一次进行普通 SELECT（即不加 lock in share mode 或 for update 的 select） 操作前都会生成一个 ReadView，而 REPEATABLE READ 只在第一次进行普通 SELECT 操作前生成一个 ReadView，之后的查询操作都重复这个 ReadView 就好了。
 
 在MVCC下，就可以做到读写不阻塞，且避免了类似脏读这样的问题。
 
 隔离级别为RU和Serializable时不需要MVCC，因此，只有RC和RR时，才存在MVCC，才存在一致性非锁定读（在事务T1读取的同一时刻，事务T2可以自由的修改事务T1所读取的数据）。
+
+#### 多版本并发控制解决了哪些问题
+
+1. 读写之间阻塞的问题
+
+通过 MVCC 可以让读写互相不阻塞，即读不阻塞写，写不阻塞读，这样就可以提升事务并发处理能力。
+
+> 提高并发的演进思路：
+>
+> - 普通锁，只能串行执行；
+> - 读写锁，可以实现读读并发；
+> - 数据多版本并发控制，可以实现读写并发。
+
+2. 降低了死锁的概率
+
+因为 InnoDB 的 MVCC 采用了乐观锁的方式，读取数据时并不需要加锁，对于写操作，也只锁定必要的行。
+
+3. 解决一致性读的问题
+
+一致性读也被称为**快照读**，当我们查询数据库在某个时间点的快照时，只能看到这个时间点之前事务提交更新的结果，而不能看到这个时间点之后事务提交的更新结果。
+
+**快照读（SnapShot Read）** 是一种**一致性不加锁的读**，是**InnoDB并发如此之高的核心原因之一**。
+
+> 这里的**一致性**是指，事务读取到的数据，要么是**事务开始前就已经存在的数据**，要么是**事务自身插入或者修改过的数据**。
+
+不加锁的简单的 SELECT 都属于**快照读**，例如：
+
+```n1ql
+`SELECT * FROM t WHERE id=1`
+```
+
+与 **快照读** 相对应的则是 **当前读**，**当前读**就是读取最新数据，而不是历史版本的数据。加锁的 SELECT 就属于当前读，例如：
+
+```pgsql
+SELECT * FROM t WHERE id=1 LOCK IN SHARE MODE;
+
+SELECT * FROM t WHERE id=1 FOR UPDATE;
+```
+
+#### 例子
+
+比如我们有如下表：
+
+![img](../../.gitbook/assets/innodb-10.png)
+
+现在有一个事务id是60的执行如下语句并提交：
+
+```text
+update user set name = '强哥1' where id = 1;
+```
+
+此时`undo log`存在版本链如下：
+
+![img](../../.gitbook/assets/innodb-11.png)
+
+提交事务id是60的记录后，接着有一个事务id为100的事务，修改name=强哥2，但是事务还没提交。则此时的版本链是：
+
+![img](../../.gitbook/assets/innodb-12.png)
+
+此时另一个事务发起`select`语句查询id=1的记录，因为`m_ids`当前只有事务id为100的，所以该条记录不可见，继续查询下一条，发现`trx_id=60`的事务号小于`min_trx_id`（即100），则可见，直接返回结果强哥1。
+
+那这时候我们把事务id为100的事务提交了，并且新建了一个事务 id 为 110 也修改 id 为 1 的记录 name=强哥3，并且不提交事务。这时候版本链就是：
+
+![img](../../.gitbook/assets/innodb-13.png)
+
+这时候之前那个`select`事务又执行了一次查询,要查询id为1的记录。
+
+如果你是已提交读隔离级别`READ_COMMITED`，这时候你会重新生成一个ReadView，那你的`m_ids`列表中的值就变了，变成了[110]。按照上的说法，你去版本链通过`trx_id`对比查找到合适的结果就是“强哥2”ß。
+
+如果你是可重复读隔离级别`REPEATABLE_READ`，这时候你的`ReadView`还是第一次`select`时候生成的`ReadView`,也就是列表的值还是[100]。所以`select`的结果是“强哥1”。所以第二次`select`结果和第一次一样，所以叫可重复读。
+
+也就是说已提交读隔离级别下的事务在每次查询的开始都会生成一个独立的`ReadView`,而可重复读隔离级别则在第一次读的时候生成一个`ReadView`，之后的读都复用之前的`ReadView`。
+
+这就是Mysql的`MVCC`,通过版本链，实现多版本，可并发读-写，写-读。通过`ReadView`生成策略的不同实现不同的隔离级别。
+
+
 
 ### Count
 
