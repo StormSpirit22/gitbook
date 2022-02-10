@@ -289,15 +289,15 @@ MySQL 中默认的事务隔离级别就是 `REPEATABLE READ`。
 
 在标准的事务隔离级别中，幻读是由更高的隔离级别 `SERIALIZABLE` 解决的，但是它也可以通过 MySQL 提供的 Next-Key 锁解决（具体可以看后文 幻读问题）。
 
-#### Log
+### Log
 
-**Undo Log**
+#### **Undo Log**
 
 回滚日志（undo log ）用来**记录事务进行的修改**，存储的是老版本数据，能够在发生错误或者用户执行 `ROLLBACK` 时提供回滚相关的信息，回滚日志必须先于数据持久化到磁盘上。undo log 是逻辑日志，只会按照日志**逻辑地**将数据库中的修改撤销掉看，可以理解为，我们在事务中使用的每一条 `INSERT` 都对应了一条 `DELETE`，每一条 `UPDATE` 也都对应一条相反的 `UPDATE` 语句。
 
 Undo Log 用来保证事务的原子性。
 
-**Redo Log**
+#### **Redo Log**
 
 重做日志（redo log）**记录事务对数据页做了哪些修改**，由两部分组成，一是内存中的 redo log 缓冲区，它是易失的。另一个就是在磁盘上的 redo log 文件，它是持久的。
 
@@ -325,7 +325,7 @@ write pos 和 checkpoint 之间的是 log 上还空着的部分，可以用来�
 
 redo log 用来保证事务的持久性。
 
-**Bin Log**
+#### **Bin Log**
 
 MySQL 整体来看，其实就有两块：一块是 Server 层，它主要做的是 MySQL 功能层面的事情；还有一块是引擎层，负责存储相关的具体事宜。redo log 是 InnoDB 引擎特有的日志，而 Server 层也有自己的日志，称为 binlog（归档日志）。
 
@@ -357,7 +357,7 @@ update 语句时的内部流程：
 
 　　假设在 redo log 写完，binlog 还没有写完的时候，MySQL 进程异常重启。由于redo log 写完之后，系统即使崩溃，仍然能够把数据恢复回来，所以恢复后这一行 c 的值是 1。但是由于 binlog 没写完就 crash 了，这时候 binlog 里面就没有记录这个语句。因此，之后备份日志的时候，存起来的 binlog 里面就没有这条语句。然后你会发现，如果需要用这个 binlog 来恢复临时库的话，由于这个语句的 binlog 丢失，这个临时库就会少了这一次更新，恢复出来的这一行 c 的值就是 0，与原库的值不同。
 
-1. 先写 binlog 后写 redo log。
+2. 先写 binlog 后写 redo log。
 
 　　如果在 binlog 写完之后 crash，由于 redo log 还没写，崩溃恢复以后这个事务无效，所以这一行 c 的值是 0。但是 binlog 里面已经记录了 “把 c 从 0 改成 1” 这个日志。所以，在之后用 binlog 来恢复的时候就多了一个事务出来，恢复出来的这一行 c 的值就是 1，与原库的值不同。
 
@@ -494,9 +494,9 @@ update user set name = '强哥1' where id = 1;
 
 这时候之前那个`select`事务又执行了一次查询,要查询id为1的记录。
 
-如果你是已提交读隔离级别`READ_COMMITED`，这时候你会重新生成一个ReadView，那你的`m_ids`列表中的值就变了，变成了[110]。按照上的说法，你去版本链通过`trx_id`对比查找到合适的结果就是“强哥2”ß。
+如果是已提交读隔离级别`READ_COMMITED`，这时候会重新生成一个ReadView，那`m_ids`列表中的值就变了，变成了[110]。按照上的说法，你去版本链通过`trx_id`对比查找到合适的结果就是“强哥2”。
 
-如果你是可重复读隔离级别`REPEATABLE_READ`，这时候你的`ReadView`还是第一次`select`时候生成的`ReadView`,也就是列表的值还是[100]。所以`select`的结果是“强哥1”。所以第二次`select`结果和第一次一样，所以叫可重复读。
+如果是可重复读隔离级别`REPEATABLE_READ`，这时候你的`ReadView`还是第一次`select`时候生成的`ReadView`,也就是列表的值还是[100]。所以`select`的结果是“强哥1”。所以第二次`select`结果和第一次一样，所以叫可重复读。
 
 也就是说已提交读隔离级别下的事务在每次查询的开始都会生成一个独立的`ReadView`,而可重复读隔离级别则在第一次读的时候生成一个`ReadView`，之后的读都复用之前的`ReadView`。
 
