@@ -12,6 +12,7 @@
   * [链表初阶](leetcode-shua-ti/lian-biao/lian-biao-jian-dan-ti.md)
   * [链表进阶](leetcode-shua-ti/lian-biao/lian-biao-bi-zhi-bi-hui.md)
   * [链表高阶](leetcode-shua-ti/lian-biao/lian-biao-jin-jie.md)
+  * [链表常用函数](leetcode-shua-ti/lian-biao/chang-yong.md)
 * [数组](leetcode-shua-ti/shu-zu/README.md)
   * [滑动窗口](leetcode-shua-ti/shu-zu/hua-dong-chuang-kou.md)
   * [栈和队列](leetcode-shua-ti/shu-zu/zhan-duilie.md)
