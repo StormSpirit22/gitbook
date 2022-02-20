@@ -197,6 +197,10 @@ update id_generator set max_id = #{max_id+step}, version = version + 1 where ver
 
 由于多业务端可能同时操作，所以采用版本号`version`乐观锁方式更新，这种分布式ID生成方式不强依赖于数据库，不会频繁的访问数据库，对数据库的压力小很多。
 
+比如`DistributIdService`每次从数据库获取ID时，就获取一个号段，比如(1,1000]，这个范围表示了1000个ID，业务应用在请求DistributIdService提供ID时，`DistributIdService`只需要在本地从1开始自增并返回即可，而不需要每次都请求数据库，一直到本地自增到1000时，也就是当前号段已经被用完时，才去数据库重新获取下一号段。
+
+
+
 #### 基于Redis模式
 
 原理就是利用redis的 incr命令实现ID的原子性自增。
