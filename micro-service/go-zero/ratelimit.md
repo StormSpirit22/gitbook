@@ -26,7 +26,7 @@
 
 
 
-![img](/Users/tianyou/Documents/Github/gitbook/.gitbook/assets/ratelimit-2.png)
+![img](../../.gitbook/assets/ratelimit-2.png)
 
 
 
@@ -49,7 +49,7 @@
 
 ### 1、固定窗口计数器算法
 
-![img](/Users/tianyou/Documents/Github/gitbook/.gitbook/assets/ratelimit-3.png)
+![img](../../.gitbook/assets/ratelimit-3.png)
 
 
 
@@ -63,13 +63,13 @@
 
 
 
-![img](/Users/tianyou/Documents/Github/gitbook/.gitbook/assets/ratelimit-4.png)
+![img](../../.gitbook/assets/ratelimit-4.png)
 
 
 
 ### 2、滑动窗口计数器算法
 
-![img](/Users/tianyou/Documents/Github/gitbook/.gitbook/assets/ratelimit-5.png)
+![img](../../.gitbook/assets/ratelimit-5.png)
 
 
 
@@ -86,7 +86,7 @@
 
 ### 3、漏桶算法
 
-![img](/Users/tianyou/Documents/Github/gitbook/.gitbook/assets/ratelimit-6.png)
+![img](../../.gitbook/assets/ratelimit-6.png)
 
 
 
@@ -104,7 +104,7 @@
 
 ### 4、令牌桶算法
 
-![img](/Users/tianyou/Documents/Github/gitbook/.gitbook/assets/ratelimit-7.png)
+![img](../../.gitbook/assets/ratelimit-7.png)
 
 
 
