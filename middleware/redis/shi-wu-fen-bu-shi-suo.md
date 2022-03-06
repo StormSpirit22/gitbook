@@ -46,54 +46,38 @@ Redis的事务和传统的关系型数据库事务的最大区别在于，**Redi
 
 ## 分布式锁
 
-参考 https://blog.csdn.net/lihao21/article/details/49104695
+参考 
 
-### SETNX命令简介
-
-命令格式
-
-```
-SETNX key value
-```
-
-将 key 的值设为 value，当且仅当 key 不存在。
-若给定的 key 已经存在，则 SETNX 不做任何动作。
-SETNX 是SET if Not eXists的简写。
-
-### 返回值
-
-返回整数，具体为
-
-- 1，当 key 的值被设置
-- 0，当 key 的值没被设置
-
-### 例子
-
-```
-redis> SETNX mykey “hello”
-(integer) 1
-redis> SETNX mykey “hello”
-(integer) 0
-redis> GET mykey
-“hello”
-redis>
-```
-
-
-
-### 使用SETNX实现分布式锁
-
-多个进程执行以下Redis命令：
-
-```
-SETNX lock.foo <current Unix time + lock timeout + 1>
-```
-
-如果 SETNX 返回1，说明该进程获得锁，SETNX将键 lock.foo 的值设置为锁的超时时间（当前时间 + 锁的有效时间）。
-
-如果 SETNX 返回0，说明其他进程已经获得了锁，进程不能进入临界区。进程可以在一个循环中不断地尝试 SETNX 操作，以获得锁。
+[深度剖析：Redis分布式锁到底安全吗？看完这篇文章彻底懂了！](http://kaito-kidd.com/2021/06/08/is-redis-distributed-lock-really-safe/)
 
 [go 实现分布式锁](https://chai2010.cn/advanced-go-programming-book/ch6-cloud/ch6-02-lock.html)
 
-[java 分布式锁](https://juejin.cn/post/6844903688088059912)
+总结：
 
+加锁： 
+
+`SET lock $uuid EX 20 NX` 
+
+EX 表示过期时间， NX 表示 Not Exist。
+
+Lua 脚本（可以保证 Get，Del 的原子性）解锁：
+
+```lua
+// 判断锁是自己的，才释放
+if redis.call("GET",KEYS[1]) == ARGV[1]
+then
+    return redis.call("DEL",KEYS[1])
+else
+    return 0
+end
+```
+
+以上方法在单机 redis 可以保证原子性。集群方式可以参考下面：
+
+Redlock： 需要至少 5 个 redis 主服务器，分别申请加锁，如果超过半数以上加锁成功且大多数节点加锁的总耗时小于锁的过期时间，则加锁成功。释放锁：向全部节点释放锁。（问题：分布式服务器时钟不统一，依赖服务器的时钟正确不合理）
+
+Fencing Token：需要提供一个锁服务，产生全局的自增 id，然后存储服务要有能判断 id 是否过期的能力，需要拒绝已经过期的 id。（可以用 Zookeeper 的 zxid 来实现，或者搞一个分布式 id 生成服务，但这样也比较麻烦）。
+
+Zookeeper：可以查看下图。
+
+![img](../../.gitbook/assets/transaction-6.png)
