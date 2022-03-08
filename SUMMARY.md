@@ -81,6 +81,10 @@
   * [服务限流](micro-service/go-zero/ratelimit.md)
   * [服务熔断](micro-service/go-zero/fuse.md)
 
+- [高并发系统设计 40 问笔记](micro-service/high-concurrency/README.md)
+  * [基础](micro-service/high-concurrency/hc-basic.md)
+  * [数据库](micro-service/high-concurrency/hc-db.md)
+
 
 
 ## MIT 6.824
