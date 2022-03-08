@@ -20,6 +20,9 @@ description: 学习笔记
 
 最后除了刷题之外，也不要忘了身边重要的人哦，毕竟工作都是为了生活呀。希望大家都能有所收获，有所成长\~
 
+【 Gitbook 】https://stormspirit.gitbook.io/stormspirit/leetcode-shua-ti/readme
+
 【 Github 】[https://github.com/StormSpirit22/gitbook](https://github.com/StormSpirit22/gitbook)
 
-##
+
+
