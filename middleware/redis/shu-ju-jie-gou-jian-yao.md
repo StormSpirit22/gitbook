@@ -1,4 +1,4 @@
-# 数据结构（简要）
+# 数据结构
 
 ## 基础数据结构
 
@@ -193,3 +193,9 @@ Radix tree
 应用场景：
 
 消息队列
+
+
+
+底层数据结构可参考（总结得很好）：
+
+[Redis进阶 - 数据结构：底层数据结构详解](https://pdai.tech/md/db/nosql-redis/db-redis-x-redis-ds.html#%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%BC%95%E5%85%A5)
