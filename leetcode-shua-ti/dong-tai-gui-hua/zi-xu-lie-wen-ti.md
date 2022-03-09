@@ -588,35 +588,32 @@ func max(a, b int) int {
 
 ```go
 func longestPalindrome(s string) string {
-    n := len(s)
-    if n <= 1 {
-        return s
-    }
-    maxLen := 0
-    start, end := 0, 0
-    for i := 0; i < n; i++ {
-        len1 := assist(i, i, s)
-        len2 := assist(i, i+1, s)
-        length := int(math.Max(len1, len2))
-        if length > maxLen {
-            maxLen = length
-            //因为i是靠近start一边的，有可能出现s[i] = s[i+1]的情况，计算start就得length-1
-            //比如aba和abba
-            start = i - (length - 1) / 2
-            end = i + length / 2
-        }
-    }
-    //左闭右开
-    return s[start:end+1] 
+	var maxLength int
+	var res string
+	// 中心扩散算法
+	for i := 0; i < len(s); i++ {
+		l1, r1 := helper(i, i, s)
+		l2, r2 := helper(i, i+1, s)
+		len1, len2 := r1 - l1 + 1, r2 - l2 + 1
+		if len1 > len2 {
+			if maxLength < len1 {
+				maxLength = len1
+				res = s[l1:r1+1]
+			}
+		} else if maxLength < len2 {
+			maxLength = len2
+			res = s[l2:r2+1]
+		}
+	}
+	return res
 }
 
-func assist(l, r int, s string) float64 {
-    for l >= 0 && r < len(s) && s[l] == s[r] {
-        l --
-        r ++
-    }
-    // 回文串的长度是right-left+1-2 = right - left - 1
-    return float64(r - l - 1)
+func helper(l, r int, s string) (int, int) {
+	for l >= 0 && r < len(s) && s[l] == s[r] {
+		l --
+		r ++
+	}
+	return l+1, r-1
 }
 ```
 
