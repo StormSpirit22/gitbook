@@ -10,7 +10,7 @@ Linux 内存管理是通过一个叫做 MMU（Memory Management Unit）的硬件
 
 **除此之外，我们熟知的 HTTP 协议也是有缓存机制的。**当我们第一次请求静态的资源时，比如一张图片，服务端除了返回图片信息，在响应头里面还有一个 `Etag` 的字段。浏览器会缓存图片信息以及这个字段的值。当下一次再请求这个图片的时候，浏览器发起的请求头里面会有一个 `If-None-Match` 的字段，并且把缓存的 `Etag` 的值写进去发给服务端。服务端比对图片信息是否有变化，如果没有，则返回浏览器一个 304 的状态码，浏览器会继续使用缓存的图片信息。通过这种缓存协商的方式，可以减少网络传输的数据大小，从而提升页面展示的性能。
 
-![img](https://zq99299.github.io/note-architect/assets/img/7a2344bd27535936b4ad4d8519d9fd81.7a2344bd.jpg)
+![img](../../.gitbook/assets/hc-cache-1.png)
 
 #### http 缓存
 
@@ -20,7 +20,7 @@ Linux 内存管理是通过一个叫做 MMU（Memory Management Unit）的硬件
 
 [HTTP 缓存](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching)
 
-![img](https://image-static.segmentfault.com/155/525/1555253303-5b4b22be9160d_articlex)
+![img](../../.gitbook/assets/hc-cache-2.png)
 
 - HTTP缓存主要分强制缓存和对比缓存
 - 强制缓存的HTTP相关头部Cache-Control（HTTP 1.1），Exipres（HTTP1.0）,浏览器直接读本地缓存，不会再跟服务器端交互，状态码200。
@@ -47,7 +47,7 @@ Linux 内存管理是通过一个叫做 MMU（Memory Management Unit）的硬件
 - **读的时候**，先读缓存，缓存没有的话，就读数据库，然后取出数据后放入缓存，同时返回响应。
 - **更新的时候**，先更新数据库，然后再删除缓存。
 
-![image-20220309155440011](/Users/tianyou/Library/Application Support/typora-user-images/image-20220309155440011.png)
+![image-20220309155440011](../../.gitbook/assets/hc-cache-3.png)
 
 以下内容来自 [ 数据库和缓存一致性](https://pdai.tech/md/db/nosql-redis/db-redis-x-cache.html#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%90%86%E8%A7%A3redis%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98)
 
@@ -59,7 +59,7 @@ Cache Aside 也会有并发问题，比如，一个是读操作，但是没有�
 
 #### 方案：异步更新缓存(基于订阅binlog的同步机制)
 
-![image-20220309153447320](/Users/tianyou/Library/Application Support/typora-user-images/image-20220309153447320.png)
+![image-20220309153447320](../../.gitbook/assets/hc-cache-4.png)
 
 1. **技术整体思路**：
 
@@ -116,7 +116,7 @@ redis 分片技术可以参考 ：[Redis进阶 - 高可拓展：分片技术（R
 
 关于一致性 hash 算法： 
 
-![image-20220309161908991](/Users/tianyou/Library/Application Support/typora-user-images/image-20220309161908991.png)
+![image-20220309161908991](../../.gitbook/assets/hc-cache-5.png)
 
 在这个算法中，我们将整个 Hash 值空间组织成一个虚拟的圆环，然后将缓存节点的 IP 地址或者主机名做 Hash 取值后，放置在这个圆环上。当我们需要确定某一个 Key 需要存取到哪个节点上的时候，先对这个 Key 做同样的 Hash 取值，确定在环上的位置，然后按照顺时针方向在环上 `行走`，遇到的第一个缓存节点就是要访问的节点。
 
@@ -170,7 +170,7 @@ CDN 回源是由 CDN 触发的，配置 CDN 的时候需要配置源站地址。
 
 6. 在观察了几天发现数据的迁移没有问题之后，就可以将数据库的双写改造成只写新库，数据的迁移也就完成了。
 
-![img](https://zq99299.github.io/note-architect/assets/img/ad9a4aa37afc39ebe0c91144d5ef7630.ad9a4aa3.jpg)
+![img](../../.gitbook/assets/hc-cache-6.png)
 
 
 
@@ -178,7 +178,7 @@ CDN 回源是由 CDN 触发的，配置 CDN 的时候需要配置源站地址。
 
 如果是将数据从自建机房迁移到云上，你也可以使用这个方案， **只是你需要考虑的一个重要的因素是：** 自建机房到云上的专线的带宽和延迟，你需要尽量减少跨专线的读操作，所以在切换读流量的时候，你需要保证自建机房的应用服务器读取本机房的数据库，云上的应用服务器读取云上的数据库。这样在完成迁移之前，只要将自建机房的应用服务器停掉，并且将写入流量都切到新库就可以了。
 
-![img](https://zq99299.github.io/note-architect/assets/img/b88aefdb07049f2019c922cdb9cb3154.b88aefdb.jpg)
+![img](../../.gitbook/assets/hc-cache-7.png)
 
 这种方式的 **好处是：** 迁移的过程可以随时回滚，将迁移的风险降到了最低。 **劣势是：** 时间周期比较长，应用有改造的成本。
 
@@ -193,11 +193,11 @@ CDN 回源是由 CDN 触发的，配置 CDN 的时候需要配置源站地址。
 3. 等到三个库的写入一致后，将数据库的读流量切换到新库；
 4. 然后暂停应用的写入，将业务的写入流量切换到新库（由于这里需要暂停应用的写入，所以需要安排在业务的低峰期）。
 
-![img](https://zq99299.github.io/note-architect/assets/img/3a2e08181177529c3229c789c2081b2b.3a2e0818.jpg)
+![img](../../.gitbook/assets/hc-cache-8.png)
 
 **这种方案的回滚方案也比较简单，** 可以先将读流量切换到备库，再暂停应用的写入，将写流量切换到备库，这样所有的流量都切换到了备库，也就是又回到了自建机房的环境，就可以认为已经回滚了。
 
-![img](https://zq99299.github.io/note-architect/assets/img/ada8866fda3c3264f495c97c6214ebb9.ada8866f.jpg)
+![img](../../.gitbook/assets/hc-cache-9.png)
 
 上面的级联迁移方案可以应用在，将 MySQL 从自建机房迁移到云上的场景，也可以应用在将 Redis 从自建机房迁移到云上的场景， **如果你有类似的需求可以直接拿来应用。**
 
@@ -215,7 +215,7 @@ CDN 回源是由 CDN 触发的，配置 CDN 的时候需要配置源站地址。
 2. 在处理自建机房的读请求时，会指定一定的流量，比如 10%，优先走云上的缓存节点，这样虽然也会走专线穿透回自建机房的缓存节点，但是流量是可控的；
 3. 当云上缓存节点的命中率达到 90% 以上时，就可以在云上部署应用服务器，让云上的应用服务器完全走云上的缓存节点就可以了。
 
-![img](https://zq99299.github.io/note-architect/assets/img/7f41a529a322e396232ac7963ec082f4.7f41a529.jpg)
+![img](../../.gitbook/assets/hc-cache-10.png)
 
 使用了这种方式，我们可以实现缓存数据的迁移，又可以尽量控制专线的带宽和请求的延迟情况， **你也可以直接在项目中使用。**
 
