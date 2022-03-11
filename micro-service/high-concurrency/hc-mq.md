@@ -18,19 +18,19 @@
 
 后台启动若干个队列处理程序，消费消息队列中的消息，再执行校验库存、下单等逻辑。**因为只有有限个队列处理线程在执行，所以落入后端数据库上的并发请求是有限的** 。而请求是可以在消息队列中被短暂地堆积， **当库存被消耗完之后，消息队列中堆积的请求就可以被丢弃了** 。
 
-![img](https://zq99299.github.io/note-architect/assets/img/de0a7a65a0bf51e1463d40d666a034ad.de0a7a65.jpg)
+![img](/Users/tianyou/Documents/Github/ty/gitbook/.gitbook/assets/hc-mq-1.png)
 
 ### 通过异步处理简化秒杀请求中的业务流程
 
 将业务逻辑分成主要逻辑和次要逻辑，分开处理。比如下图先处理核心的订单业务逻辑，然后将消息继续放到消息队列里，等待其他的业务逻辑继续消费执行，不占用主要逻辑的时间。
 
-![img](https://zq99299.github.io/note-architect/assets/img/3b19c4b5e93eeb32fd9665e330e6efaa.3b19c4b5.jpg)
+![img](/Users/tianyou/Documents/Github/ty/gitbook/.gitbook/assets/hc-mq-2.png)
 
 ### 解耦实现秒杀系统模块之间松耦合
 
 将业务系统和数据系统解耦。比如下图中业务处理之后再把数据放到消息队列中供数据服务消费处理。
 
-![img](https://zq99299.github.io/note-architect/assets/img/6e096e287f2c418f663ab201f435a5f6.6e096e28.jpg)
+![img](/Users/tianyou/Documents/Github/ty/gitbook/.gitbook/assets/hc-mq-3.png)
 
 ### 总结
 
@@ -99,14 +99,14 @@ Kafka 通过 JMX 暴露了消息堆积的数据，我在本地启动了一个 co
 
 3. 业务处理程序消费到这个消息时直接丢弃掉，而监控程序在消费到这个消息时， **就可以和这个消息的生成时间做比较** ，如果时间差达到某一个阈值就可以向我们报警。
 
-![img](https://zq99299.github.io/note-architect/assets/img/34820c0b27e66af37fda116a1a98347f.34820c0b.jpg)
+![img](/Users/tianyou/Documents/Github/ty/gitbook/.gitbook/assets/hc-mq-4.png)
 
 ### 减少消息延迟
 
 1. kafka 增加 partition。
 2. 单 consumer 使用线程池去消费数据（需要注意消费线程空转的问题，拉取不到消息可以等待一段时间再来拉取，等待的时间不宜过长，否则会增加消息的延迟。一般建议固定的 10ms~100ms，也可以按照一定步长递增，比如第一次拉取不到消息等待 10ms，第二次 20ms，最长可以到 100ms，直到拉取到消息再回到 10ms）。
 
-#### kafka 性能优化
+#### kafka 为什么这么快
 
 1. 消息在磁盘中顺序写入。
 2. 利用partition并行消息处理，即使多个partition在同一个节点，也可以对应不同的磁盘，充分发挥多磁盘优势。
