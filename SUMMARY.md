@@ -85,6 +85,8 @@
   * [基础](micro-service/high-concurrency/hc-basic.md)
   * [数据库](micro-service/high-concurrency/hc-db.md)
   * [缓存](micro-service/high-concurrency/hc-cache.md)
+  * [消息队列](micro-service/high-concurrency/hc-mq.md)
+  * [分布式服务](micro-service/high-concurrency/hc-service.md)
 
 
 
