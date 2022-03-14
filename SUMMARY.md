@@ -88,6 +88,7 @@
   * [消息队列](micro-service/high-concurrency/hc-mq.md)
   * [分布式服务](micro-service/high-concurrency/hc-service.md)
   * [维护](micro-service/high-concurrency/hc-ops.md)
+  * [实战](micro-service/high-concurrency/hc-design.md)
 
 
 
