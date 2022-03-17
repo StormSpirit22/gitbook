@@ -44,6 +44,7 @@
 * [Redis](middleware/redis/README.md)
   
   * [数据结构（简要）](middleware/redis/shu-ju-jie-gou-jian-yao.md)
+  * [底层数据结构）](middleware/redis/redis-di-ceng.md)
   * [数据结构（详细）](middleware/redis/redis-xue-xi-yi.md)
   * [数据淘汰策略/过期策略](middleware/redis/shu-ju-tao-tai-ce-lve-guo-qi-ce-lve.md)
   * [持久化](middleware/redis/chi-jiu-hua.md)
