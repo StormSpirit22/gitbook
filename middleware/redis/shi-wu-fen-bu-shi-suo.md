@@ -28,7 +28,7 @@ Redis的事务和传统的关系型数据库事务的最大区别在于，**Redi
 
 ![](../../.gitbook/assets/transaction-2.png)
 
-如果任意一个被监视的键已经被其他客户端修改了， 那么整个事务不再执行， 直接返回失败\\
+如果任意一个被监视的键已经**被其他客户端修改**了， 那么整个事务不再执行， 直接返回失败。
 
 ![](<../../.gitbook/assets/transaction-3 (1).png>)
 
@@ -80,4 +80,4 @@ Fencing Token：需要提供一个锁服务，产生全局的自增 id，然后�
 
 Zookeeper：可以查看下图。
 
-![img](../../.gitbook/assets/transaction-6.png)
+<img src="../../.gitbook/assets/transaction-6.png" alt="img" style="zoom:300%;" />
