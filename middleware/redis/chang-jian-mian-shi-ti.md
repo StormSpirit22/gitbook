@@ -15,6 +15,7 @@
 解决方法：
 
 * 设置热点数据永远不过期。
+* Go 的单飞模式（多个同样的请求，只执行一次）。可参考 [Go并发编程(十二) Singleflight](https://lailin.xyz/post/go-training-week5-singleflight.html)
 
 **缓存雪崩**是指在我们设置缓存时采用了相同的过期时间，导致缓存在某一时刻同时失效，请求全部转发到DB，DB瞬时压力过重雪崩。
 
@@ -80,7 +81,7 @@ Memcached利用**slab allocation**机制来分配和管理内存，它按照预�
 
 Memcached的内存管理制效率高，而且不会造成内存碎片，但是它最大的缺点就是会导致空间浪费。因为每个 Chunk都分配了特定长度的内存空间，所以变长数据无法充分利用这些空间。
 
-memcached 具体可参考 [[memcached分布式原理与实现](https://segmentfault.com/a/1190000016173095)](https://segmentfault.com/a/1190000016173095)
+memcached 具体可参考 [memcached分布式原理与实现](https://segmentfault.com/a/1190000016173095)
 
 ## Redis 单线程 or 多线程
 
