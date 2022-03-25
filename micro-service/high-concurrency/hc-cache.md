@@ -16,6 +16,8 @@ Linux 内存管理是通过一个叫做 MMU（Memory Management Unit）的硬件
 
 参考 
 
+[深入理解浏览器的缓存机制](https://www.jianshu.com/p/54cc04190252)
+
 [5分钟看懂系列：HTTP缓存机制详解](https://segmentfault.com/a/1190000021716418)
 
 [HTTP 缓存](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Caching)
