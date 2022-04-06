@@ -24,6 +24,10 @@ description: 二叉树的简单题
 
 [平衡二叉树（简单）](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
 
+[二叉树的直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
+
+
+
 ## 题目解析
 
 ### 二叉树的最大深度
@@ -78,7 +82,28 @@ description: 二叉树的简单题
 
 我们可以先计算 root 节点的左子树的最大深度和右子树的最大深度，然后判断两者相差是否大于 1。
 
-但是仅仅这样判断是不够的，因为你不知道左子树或者右子树里面会不会有深度相差大于 1 的情况，所以还需要继续递归左右子树去判断。所以需要对每个节点的左右子树判断是否深度相差大于 1 即可。\\
+但是仅仅这样判断是不够的，因为你不知道左子树或者右子树里面会不会有深度相差大于 1 的情况，所以还需要继续递归左右子树去判断。所以需要对每个节点的左右子树判断是否深度相差大于 1 即可。
+
+### 二叉树的直径
+
+> 给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+>
+>  
+>
+> 示例 :
+> 给定二叉树
+>
+>           1
+>          / \
+>         2   3
+>        / \     
+>       4   5    
+> 返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
+>
+
+解析：
+
+我们可以计算出每个节点的左右子树的最大深度，然后相加就是经过这个节点的直径，比较出来这些直径里的最大值返回即可。比如节点 1 的左右子树的最大深度是 2 和 1，相加就是 3 。可以定义一个递归函数，返回值是这个节点的的最大深度，比如节点 2 的最大深度就是 2，这样节点 1 的左子树最大长度就是 2 了。而节点的最大深度就是左右子树的最大深度值 + 1，即 `max(left, right) + 1`。
 
 ## 代码
 
@@ -91,7 +116,7 @@ func maxDepth(root *TreeNode) int {
     }
     return max(maxDepth(root.Left), maxDepth(root.Right)) + 1
 }
-​
+
 func max(a, b int) int {
     if a > b {
         return a
@@ -109,7 +134,7 @@ func isSymmetric(root *TreeNode) bool {
   }
   return helper(root.Left, root.Right)
 }
-​
+
 func helper(l, r *TreeNode) bool {
   if l == nil && r == nil {
     return true
@@ -171,19 +196,60 @@ func isBalanced(root *TreeNode) bool {
     }
     return isBalanced(root.Left) && isBalanced(root.Right)
 }
-​
+
 func depth(root *TreeNode) int {
     if root == nil {
         return 0
     }
     return max(depth(root.Left), depth(root.Right)) + 1
 }
-​
+
 func max(a, b int) int {
     if a > b {
         return a
     }
     return b
 }
-​
+
 ```
+
+### 二叉树的直径
+
+```go
+/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func diameterOfBinaryTree(root *TreeNode) int {
+    var res int
+
+    var depth func(*TreeNode) int
+    depth = func(root *TreeNode) int {
+        if root == nil {
+            return 0
+        }
+
+        // 这里得到节点左右子树最大的长度，比如节点 1 左子树最大长度为 2，右子树最大长度为 1
+        left := depth(root.Left)
+        right := depth(root.Right)
+
+        res = max(res, left+right)
+        // 返回节点深度
+        return max(left, right)+1
+    }
+    depth(root)
+    return res
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+```
+
