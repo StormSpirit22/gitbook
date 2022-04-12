@@ -146,9 +146,25 @@ type revision struct {
 }
 ```
 
-main 属性对应事务 ID，全局递增不重复，它在 etcd 中被当做一个逻辑时钟来使用。sub 代表一次事务中不同的修改操作（如put和delete）编号，从0开始依次递增。所以在一次事务中，每一个修改操作所绑定的`revision`依次为`{txID, 0}`, `{txID, 1}`, `{txID, 2}`…
+main 属性对应事务 ID，全局递增不重复，它在 etcd 中被当做一个逻辑时钟来使用。sub 代表一次事务中不同的修改操作编号，从0开始依次递增。所以在一次事务中，每一个修改操作所绑定的`revision`依次为`{txID, 0}`, `{txID, 1}`, `{txID, 2}`…
 
-比如启动一个空集群，全局版本号默认为 1，执行下面的 txn 事务，它包含两次 put、一次 get 操作，那么按照我们上面介绍的原理，全局版本号随读写事务自增，因此 main 为 2，sub 随事务内的 put/delete 操作递增，因此 key hello 的 revison 为{2,0}，key world 的 revision 为{2,1}。
+比如启动一个空集群，全局版本号默认为 1，执行下面的 txn 事务，它包含两次 put、一次 get 操作，那么按照我们上面介绍的原理，全局版本号随读写事务自增，因此 main 为 2，sub 随事务内的 put 操作递增，因此 key hello 的 revison 为{2,0}，key world 的 revision 为{2,1}。
+
+```bash
+$ etcdctl txn -i
+
+compares:
+
+success requests (get，put，del):
+
+put hello 1
+
+get hello
+
+put world 2
+```
+
+版本号可以认为就是事务 ID，即老的事务 id 基于快照是看不到新的事务 id 提交的数据的。sub 的作用我认为更多的是为了和 main 组成一个全局唯一的 key，这个 key 插入到 boltdb 中就能记录多个版本的数据，不知道理解的对不对。
 
 #### keyIndex
 
@@ -170,6 +186,8 @@ type generation struct {
 
 它保存的是当前`key`的具体值（key），最近一次修改的版本号（modified），以及记录`key`生命周期的`generation`，一个`generation`代表了一个`key`从创建到被删除的过程。generations 代表在它这一代中，所经历过的版本变更。
 
+在etcd中，对数据做删除操作并没有对数据做删除，而是在generations数组后追加了一个新的generation元素。
+
 keyIndex 作用：可以通过 key 来查询到这个 key 所有的版本。
 
 #### treeIndex
@@ -178,7 +196,9 @@ keyIndex 作用：可以通过 key 来查询到这个 key 所有的版本。
 
 这棵树的每一个节点都是上面的`keyIndex`，主要用于加速通过 key 查询到 keyIndex 的过程。
 
-![img](../../.gitbook/assets/etcd-5.png)
+generations 不一定都是像图里顺序的，比如 [{2,0}, {2,1}]，也可能是 [{2, 0}, {4, 2}]，表示第一次变更发生在ID为2的事务中，且是第一次操作，第二次变更发生在ID为4的事务中，且是第三次操作。
+
+![image-20220412235400963](../../.gitbook/assets/etcd-13.png)
 
 为什么用 b 树而不是 b+ 树？
 
@@ -262,7 +282,7 @@ generations:
 
 读事务对象根据此版本号为 key，通过 Backend 的并发读事务（ConcurrentReadTx）接口，优先从 buffer 中查询，命中则直接返回，否则从 boltdb 中查询此 key 的 value 信息。
 
-**当你再次发起一个 put hello 为 world2 修改操作时**，key hello 对应的 keyIndex 的结果如下面所示，keyIndex.modified 字段更新为 <3,0>，generation 的 revision 数组追加最新的版本号 <3,0>，ver 修改为 2。
+**当你再次发起一个 put hello 为 world2 修改操作时（不同事务）**，key hello 对应的 keyIndex 的结果如下面所示，keyIndex.modified 字段更新为 <3,0>，generation 的 revision 数组追加最新的版本号 <3,0>，ver 修改为 2。
 
 ```go
 key hello 的 keyIndex:
