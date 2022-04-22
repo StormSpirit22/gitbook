@@ -32,19 +32,15 @@
 
 这题和全排列的套路差不多。但是因为该序列是包含重复数字的，所以要先排序再多一个判断条件：
 
-`if i > 0 && nums[i] == nums[i-1] && !visited[i-1]` 就 continue。
+`if i > 0 && nums[i] == nums[i-1] && visited[i-1]` 就 continue。
 
-加上 !visited\[i - 1] 来去重主要是通过限制一下两个相邻的重复数字的访问顺序。
+加上 visited\[i - 1] 来去重主要是通过限制一下两个相邻的重复数字的访问顺序，意思就是访问过了 nums\[i-1] 就 continue。
 
 举个栗子，对于两个相同的数11，我们将其命名为 1a1b, 1a表示第一个1，1b表示第二个1；
 
 那么，不做去重的话，会有两种重复排列 1a1b, 1b1a， 我们只需要取其中任意一种排列；
 
-为了达到这个目的，限制一下1a, 1b访问顺序即可。 比如我们只取1a1b那个排列的话，
-
-只有当 visit nums\[i-1] 之后我们才去 visit nums\[i] ， 也就是如果 !visited\[i-1] 的话则continue。
-
-或者 visited\[i-1] 也可以，即去掉 ! ，此时意思就是访问过了 nums\[i-1] 就 continue。
+为了达到这个目的，限制一下1a, 1b访问顺序即可。 比如我们只取1a1b那个排列的话，那么 nums[i] == nums[i-1] 并且访问过了 nums\[i-1] 就 continue 。
 
 因为要去重所以肯定要先排个序啦。
 
@@ -139,15 +135,7 @@ func permuteUnique(nums []int) [][]int {
             if visited[i] {
                 continue
             }
-            /*
-            加上 !vis[i - 1]来去重主要是通过限制一下两个相邻的重复数字的访问顺序
-            举个栗子，对于两个相同的数11，我们将其命名为1a1b, 1a表示第一个1，1b表示第二个1； 
-            那么，不做去重的话，会有两种重复排列 1a1b, 1b1a， 我们只需要取其中任意一种排列； 
-            为了达到这个目的，限制一下1a, 1b访问顺序即可。 比如我们只取1a1b那个排列的话，
-            只有当visit nums[i-1]之后我们才去visit nums[i]， 也就是如果!visited[i-1]的话则continue。
-            或者 visited[i-1] 也可以，即去掉 ! ，此时意思就是访问过了 nums[i-1] 就 continue。
-            */
-            if i > 0 && nums[i] == nums[i-1] && !visited[i-1] {
+            if i > 0 && nums[i] == nums[i-1] && visited[i-1] {
                 continue
             }
 
