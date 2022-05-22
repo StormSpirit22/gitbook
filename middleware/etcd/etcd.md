@@ -374,6 +374,8 @@ boltdb中比较有特色的几个feature。
 
 ## CAP 保证
 
+CAP 理论可参考 [一文看懂｜分布式系统之CAP理论](https://cloud.tencent.com/developer/article/1860632)，写得非常详细。
+
 ### etcd 是 CP 系统
 
 etcd 使用 raft 算法保证一致性。
