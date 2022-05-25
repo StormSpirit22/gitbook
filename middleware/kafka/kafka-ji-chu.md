@@ -1,9 +1,5 @@
 # Kafka 基础
 
-以下内容整理自，侵删
-
-https://gitbook.cn/books/5ae1e77197c22f130e67ec4e/index.html
-
 ## 基础
 
 Kafka 是由 `Linkedin` 公司开发的，它是一个分布式的，支持多分区、多副本，基于 Zookeeper 的分布式消息流平台，它同时也是一款开源的**基于发布订阅模式的消息引擎系统**。
@@ -133,6 +129,25 @@ Kafka 的 ISR 的管理最终都会反馈到 ZooKeeper 节点上，具体位置�
 
 1. Controller 来维护：Kafka 集群中的其中一个 Broker 会被选举为 Controller，主要负责 Partition 管理和副本状态管理，也会执行类似于重分配 partition 之类的管理任务。在符合某些特定条件下，Controller 下的 LeaderSelector 会选举新的 leader，ISR 和新的 `leader_epoch` 及 `controller_epoch` 写入 ZooKeeper 的相关节点中。同时发起 LeaderAndIsrRequest 通知所有的 replicas。
 2. leader 来维护：leader 有单独的线程定期检测 ISR 中 follower 是否脱离 ISR，如果发现 ISR 变化，则会将新的 ISR 的信息返回到 ZooKeeper 的相关节点中。
+
+#### Broker 选举过程
+
+kafka 控制器管理着整个集群中分区以及副本的状态，控制器的选举需要依赖于 Zookeeper，在 kafka 集群启动的时候，会在 ZK 中创建一个临时节点 `(EPHEMERAL)/controller`，在每个 Broker 启动的时候，都会先去访问 ZK 中的这个节点，如果不存在 Broker 就会则创建这个节点，先到先得称为 Controller，其它 Broker 当访问这个节点的时候，如果读取到 brokerid 不等于 -1，那么说明 Controller 已经被选举出来了。
+
+另外 Zookeeper 中还有一个与控制器有关的`/controller_epoch`节点，这个节点是**持久（Persistent）节点**，节点中存放的是一个整型的 controller_epoch 值。**controller_epoch 值用于记录控制器发生变更的次数**，即记录当前的控制器是第几代控制器，我们也可以称之为“控制器纪元”。
+  controller_epoch 的初始值为 1，即集群中的第一个控制器的纪元为 1，当控制器发生变更时，每选出一个新的控制器就将该字段值加 1。**每个和控制器交互的请求都会携带 controller_epoch 这个字段，如果请求的 controller_epoch 值小于内存中的controller_epoch 值，则认为这个请求是向已经过期的控制器发送的请求，那么这个请求会被认定为无效的请求。如果请求的controller_epoch 值大于内存中的 controller_epoch 值，那么说明已经有新的控制器当选了（也就是说接收到这种请求的 broker 已经不再是控制器了）。由此可见，Kafka 通过 controller_epoch 来保证控制器的唯一性，进而保证相关操作的一致性。**
+
+  具备控制器身份的 broker 需要比其他普通的 broker 多一份职责，具体细节如下：
+
+- 监听分区的变化。
+- 监听主题的变化。
+- 监听 broker 相关的变化。
+- 从 Zookeeper 中读取获取当前所有与主题、分区及 broker 有关的信息并进行相应的管理。
+- 启动并管理分区状态机和副本状态机。
+- 更新集群的元数据信息。
+
+  当`/controller`节点的数据发生变化时，每个 broker 都会更新自身内存中保存的 activeControllerId。如果 broker 在数据变更前是控制器，在数据变更后自身的 brokerid 值与新的 activeControllerId 值不一致，那么就需要“退位”，关闭相应的资源，比如关闭状态机、注销相应的监听器等。有可能控制器由于异常而下线，造成`/controller`这个临时节点被自动删除；也有可能是其他原因将此节点删除了。
+  当`/controller`节点被删除时，每个 broker 都会进行选举，如果 broker 在节点被删除前是控制器，那么在选举前还需要有一个“退位”的动作。如果有特殊需要，则可以手动删除`/controller`节点来触发新一轮的选举。当然关闭控制器所对应的 broker，以及手动向`/controller`节点写入新的 brokerid 的所对应的数据，同样可以触发新一轮的选举。
 
 #### 数据可靠性和持久性保证
 
@@ -278,3 +293,9 @@ consumer group 下有多个 consumer（消费者），对于每个消费者组�
 [kafka系列之幂等生产者(11)](https://juejin.cn/post/6938998510788280333)
 
 [答面试官问：怎么实现接口幂等性](https://learnku.com/articles/50902)
+
+
+
+## 参考
+
+[深入浅出理解基于 Kafka 和 ZooKeeper 的分布式消息队列](https://gitbook.cn/books/5ae1e77197c22f130e67ec4e/index.html)
