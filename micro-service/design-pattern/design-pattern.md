@@ -45,6 +45,31 @@ func GetLazyInstance() *Singleton {
 用于创造类型相关的不同对象。
 
 ```go
+package factory
+
+// IRuleConfigParser IRuleConfigParser
+type IRuleConfigParser interface {
+	Parse(data []byte)
+}
+
+// jsonRuleConfigParser jsonRuleConfigParser
+type jsonRuleConfigParser struct {
+}
+
+// Parse Parse
+func (J jsonRuleConfigParser) Parse(data []byte) {
+	panic("implement me")
+}
+
+// yamlRuleConfigParser yamlRuleConfigParser
+type yamlRuleConfigParser struct {
+}
+
+// Parse Parse
+func (Y yamlRuleConfigParser) Parse(data []byte) {
+	panic("implement me")
+}
+
 // NewIRuleConfigParser NewIRuleConfigParser
 func NewIRuleConfigParser(t string) IRuleConfigParser {
 	switch t {
@@ -54,6 +79,46 @@ func NewIRuleConfigParser(t string) IRuleConfigParser {
 		return yamlRuleConfigParser{}
 	}
 	return nil
+}
+```
+
+单元测试
+
+```go
+package factory
+
+import (
+	"reflect"
+	"testing"
+)
+
+func TestNewIRuleConfigParser(t *testing.T) {
+	type args struct {
+		t string
+	}
+	tests := []struct {
+		name string
+		args args
+		want IRuleConfigParser
+	}{
+		{
+			name: "json",
+			args: args{t: "json"},
+			want: jsonRuleConfigParser{},
+		},
+		{
+			name: "yaml",
+			args: args{t: "yaml"},
+			want: yamlRuleConfigParser{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewIRuleConfigParser(tt.args.t); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewIRuleConfigParser() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
 ```
 
