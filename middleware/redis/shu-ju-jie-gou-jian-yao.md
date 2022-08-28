@@ -138,6 +138,8 @@ redis跳跃表具体的实现如图所示：
 
 ![](<../../.gitbook/assets/datastructure-7 (1).png>)
 
+Bitmap 提供了 `GETBIT、SETBIT` 操作，通过一个偏移值 offset 对 bit 数组的 offset 位置的 bit 位进行读写操作，需要注意的是 offset 从 0 开始。
+
 实现方式：
 
 Redis string
@@ -182,7 +184,7 @@ Zset和geohash（Redis将所有地理位置信息的geohash存在zset中）。
 
 常用来统计一个集合中不重复的元素个数，例如网站PV，搜索关键词数量。
 
-### Steam
+### Stream
 
 Redis 5.0 版本新增加的数据结构，内存版的kafka。相比于PUB/SUB、BLOCKED LIST，其虽然也可以在简单的场景下作为消息队列来使用，但是Redis Stream要完善很多。Redis Stream提供了消息的持久化和主备复制功能、甚至是类似于Kafka的Consumer Group功能。
 

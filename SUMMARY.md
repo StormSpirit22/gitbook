@@ -93,6 +93,9 @@
   * [分布式服务](micro-service/high-concurrency/hc-service.md)
   * [维护](micro-service/high-concurrency/hc-ops.md)
   * [实战](micro-service/high-concurrency/hc-design.md)
+- [设计模式](micro-service/design-pattern/README.md)
+  - [常用设计模式](micro-service/design-pattern/design-pattern.md)
+
 
 
 

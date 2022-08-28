@@ -23,7 +23,7 @@ description: 二叉树简单遍历
 ```go
 func preorderRecursive(root *TreeNode) []int {
   var res []int
-  if root == nil {
+  if root != nil {
     res = append(res, root.Val)
     res = append(res, preorderRecursive(root.Left)...)
     res = append(res, preorderRecursive(root.Right)...)
@@ -78,7 +78,7 @@ func preorderTraversal(root *TreeNode) []int {
 ```go
 func inorderRecursive(root *TreeNode) []int {
   var res []int
-  if root == nil {
+  if root != nil {
     res = append(res, preorderRecursive(root.Left)...)
     res = append(res, root.Val)
     res = append(res, preorderRecursive(root.Right)...)
@@ -119,7 +119,7 @@ func inorderTraversal(root *TreeNode) []int {
 ```go
 func postorderTraversal(root *TreeNode) []int {
   var res []int
-  if root == nil {
+  if root != nil {
     res = append(res, preorderRecursive(root.Left)...)
     res = append(res, preorderRecursive(root.Right)...)
     res = append(res, root.Val)
@@ -179,7 +179,7 @@ func levelOrderRecursive(root *TreeNode) [][]int {
   levelOrderRecursiveHelper(root, 1)
   return result
 }
-​
+
 func levelOrderRecursiveHelper(root *TreeNode, level int) {
   if root == nil {
     return
@@ -191,7 +191,7 @@ func levelOrderRecursiveHelper(root *TreeNode, level int) {
   levelOrderRecursiveHelper(root.Left, level + 1)
   levelOrderRecursiveHelper(root.Right, level + 1)
 }
-​
+
 ```
 
 非递归代码：

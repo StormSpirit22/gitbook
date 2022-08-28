@@ -93,7 +93,9 @@ Redis 6.0 之后在网络 IO 处理方面上了多线程，如网络数据的读
 
 ## Redis 缓存与数据库双写一致性
 
-可以参考 [高并发系统40问笔记-缓存的读写策略](https://stormspirit.gitbook.io/stormspirit/microservice/high-concurrency/hc-cache#huan-cun-de-du-xie-ce-lve)
+可以参考 [高并发系统40问笔记-缓存的读写策略](https://stormspirit.gitbook.io/stormspirit/microservice/high-concurrency/hc-cache#huan-cun-de-du-xie-ce-lve) 。
+
+延迟删除可参考 [延时双删实现MySQL和Redis的数据一致性 ](https://cloud.tencent.com/developer/news/634004)。
 
 
 
