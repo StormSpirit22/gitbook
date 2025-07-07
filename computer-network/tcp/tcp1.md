@@ -2,7 +2,7 @@
 
 ## 网络模型
 
-![OSI 参考模型与 TCP/IP 的关系](../../gitbook/.gitbook/assets/tcp1.png)
+![OSI 参考模型与 TCP/IP 的关系](../../.gitbook/assets/tcp1.png)
 
 
 
@@ -10,7 +10,7 @@
 
 ### OSI 七层网络模型
 
-![OSI](/Users/zonst/Downloads/OSI.png)
+![OSI](../../.gitbook/assets/OSI.png)
 
 ## TCP 协议
 
@@ -22,7 +22,7 @@ TCP 是**面向连接的、可靠的、基于字节流**的传输层通信协议
 
 ### 三次握手
 
-![image-20240602201935286](../../gitbook/.gitbook/assets/tcp2.png)
+![image-20240602201935286](../../.gitbook/assets/tcp2.png)
 
 - 从最开始双方都处于`CLOSED`状态。然后服务端开始监听某个端口，进入了`LISTEN`状态。
 - 然后客户端主动发起连接，发送 SYN , 自己变成了`SYN-SENT`状态。
@@ -43,7 +43,7 @@ TCP 是**面向连接的、可靠的、基于字节流**的传输层通信协议
 
 ### 四次挥手
 
-![image-20240602205441746](../../gitbook/.gitbook/assets/tcp3.png)
+![image-20240602205441746](../../.gitbook/assets/tcp3.png)
 
 - 刚开始双方处于`ESTABLISHED`状态。
 - 客户端要断开了，向服务器发送 `FIN` 报文，发送后客户端变成了`FIN-WAIT-1`状态。注意, 这时候客户端同时也变成了`half-close(半关闭)`状态，即无法向服务端发送报文，只能接收。

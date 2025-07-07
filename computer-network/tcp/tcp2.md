@@ -19,7 +19,7 @@ TCP 会在以下两种情况发生超时重传：
 
 `RTT`（Round-Trip Time 往返时延）
 
-<img src="/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp4.png" alt="image-20240609105927315" style="zoom:50%;" />
+<img src="../../.gitbook/assets/tcp4.png" alt="image-20240609105927315" style="zoom:50%;" />
 
 `RTT` 指的是**数据发送时刻到接收到确认的时刻的差值**，也就是包的往返时间。
 
@@ -56,7 +56,7 @@ TCP 还有另外一种**快速重传（Fast Retransmit）机制**，它**不以�
 
 在 TCP 传输的过程中，如果发生了丢包，即接收端发现数据段**不是按序到达**的时候，接收端的处理是重复发送之前的 ACK。
 
-![tcp5](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp5.png)
+![tcp5](../../.gitbook/assets/tcp5.png)
 
 在上图，发送方发出了 1，2，3，4，5 份数据：
 
@@ -108,7 +108,7 @@ TCP 头里有一个字段叫 `Window`，也就是窗口大小。
 
 #### 接收方窗口
 
-![image-20240610214723828](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp7.png)
+![image-20240610214723828](../../.gitbook/assets/tcp7.png)
 
 其中三个接收部分，使用两个指针进行划分:
 
@@ -213,7 +213,7 @@ scss
 
 拥塞避免算法的变化过程如下图：
 
-<img src="/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp19.png" alt="image-20240714100342379" style="zoom:50%;" />
+<img src="../../.gitbook/assets/tcp19.png" alt="image-20240714100342379" style="zoom:50%;" />
 
 
 
@@ -227,7 +227,7 @@ scss
 - `ssthresh = cwnd`
 - cwnd 线性增加
 
-![快重传与快恢复](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp21.png)
+![快重传与快恢复](../../.gitbook/assets/tcp21.png)
 
 
 
@@ -255,7 +255,7 @@ Nagle 算法做了一些策略来避免过多的小数据报文发送，这可�
 
 示意图：
 
-![image-20240714120957275](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp22.png)
+![image-20240714120957275](../../.gitbook/assets/tcp22.png)
 
 **Nagle 算法默认是打开的**。
 
@@ -279,7 +279,7 @@ Nagle 算法做了一些策略来避免过多的小数据报文发送，这可�
 
 如图所示：
 
-<img src="/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp23.png" alt="image-20240714121217474" style="zoom:50%;" />
+<img src="../../.gitbook/assets/tcp23.png" alt="image-20240714121217474" style="zoom:50%;" />
 
 发送方使用了 Nagle 算法，接收方使用了 TCP 延迟确认会发生如下的过程：
 

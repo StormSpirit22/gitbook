@@ -8,7 +8,7 @@
 
 四次挥手大家都知道，上一篇文也说过，这里再回顾一下：
 
-![在这里插入图片描述](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp8.png)
+![在这里插入图片描述](../../.gitbook/assets/tcp8.png)
 
 - 客户端主动调用关闭连接的函数，于是就会发送 FIN 报文，这个 FIN 报文代表客户端不会再发送数据了，进入 FIN_WAIT_1 状态；
 - 服务端收到了 FIN 报文，然后马上回复一个 ACK 确认报文，此时服务端进入 CLOSE_WAIT 状态。在收到 FIN 报文的时候，TCP 协议栈会为 FIN 包插入一个文件结束符 EOF 到接收缓冲区中，服务端应用程序可以通过 read 调用来感知这个 FIN 包，这个 EOF 会被**放在已排队等候的其他已接收的数据之后**，所以必须要得继续 read 接收缓冲区已接收的数据；
@@ -63,7 +63,7 @@ int shutdown(int sockfd, int how);
 
 当被动关闭方（即服务端）在 TCP 挥手过程中，「**没有数据要发送」并且「开启了 TCP 延迟确认机制」，那么第二和第三次挥手就会合并传输，这样就出现了三次挥手。**
 
-![image-20240616193031493](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp9.png)
+![image-20240616193031493](../../gitbook/.gitbook/assets/tcp9.png)
 
 因为 TCP 延迟确认机制是默认开启的，所以导致我们抓包时，看见三次挥手的次数比四次挥手还多。
 
@@ -75,7 +75,7 @@ int shutdown(int sockfd, int how);
 - 当没有响应数据要发送时，ACK 将会延迟一段时间，以等待是否有响应数据可以一起发送
 - 如果在延迟等待发送 ACK 期间，对方的第二个数据报文又到达了，这时就会立刻发送 ACK
 
-<img src="/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp10.png" alt="img" style="zoom: 67%;" />
+<img src="../../.gitbook/assets/tcp10.png" alt="img" style="zoom: 67%;" />
 
 > 怎么关闭 TCP 延迟确认机制？
 
@@ -183,11 +183,11 @@ func main() {
 
 本地运行 wireshark 抓包，注意因为客户端和服务端都在本地运行，所以需要抓本机的回环包，需要开启这个：
 
-![image-20240616210633311](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp11.png)
+![image-20240616210633311](../../gitbook/.gitbook/assets/tcp11.png)
 
 macOS 运行的结果：
 
-![image-20240616210743813](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp12.png)
+![image-20240616210743813](../../.gitbook/assets/tcp12.png)
 
 看抓包确实是四次挥手。
 
@@ -197,7 +197,7 @@ Linux 运行的结果，使用命令抓回环包：
 tcpdump -nnvv -i lo port 9000 -w /tmp/tcp.cap
 ```
 
-![image-20240616210830497](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp13.png)
+![image-20240616210830497](../../.gitbook/assets/tcp13.png)
 
 变成三次挥手了，少了一个单独的 ACK 包。
 
@@ -205,9 +205,9 @@ tcpdump -nnvv -i lo port 9000 -w /tmp/tcp.cap
 
 在 Linux 环境下关闭 tcp 延迟确认。不过 go 的 syscall 包在 mac 环境下找不到 syscall.TCP_QUICKACK，可见 macOS 确实不支持该设置。但是在 linux 的包可以找到：
 
-![image-20240616212343125](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp16.png)
+![image-20240616212343125](../../.gitbook/assets/tcp16.png)
 
-![image-20240616212136194](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp15.png)
+![image-20240616212136194](../../.gitbook/assets/tcp15.png)
 
 #### 服务端
 
@@ -331,7 +331,7 @@ func main() {
 
 抓包结果：
 
-![image-20240616211236224](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp14.png)
+![image-20240616211236224](../../.gitbook/assets/tcp14.png)
 
 手动设置 TCP_QUICKACK 为 1 后变成四次挥手了。
 

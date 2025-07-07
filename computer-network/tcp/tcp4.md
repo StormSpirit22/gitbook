@@ -10,7 +10,7 @@ TCP 是一个面向「流」的协议，所谓流就是没有界限的一长串�
 
 
 
-![粘包/拆包](/Users/zonst/Documents/Github/gitbook/.gitbook/assets/tcp18.jpeg)
+![粘包/拆包](../../.gitbook/assets/tcp18.jpeg)
 
 
 
