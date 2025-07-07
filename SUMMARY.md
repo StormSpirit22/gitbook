@@ -77,7 +77,6 @@
   * [etcd](middleware/etcd/etcd.md)
 
 ## 计算机网络 <a href="#network" id="network"></a>
-- [TCP](computer-netword/tcp/README.md)
 * [TCP 基础](computer-network/tcp/tcp1.md) 
 * [TCP 算法](computer-network/tcp/tcp2.md) 
 * [TCP 三次挥手](computer-network/tcp/tcp3.md) 
