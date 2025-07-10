@@ -2,8 +2,6 @@
 
 布隆过滤器的原理可参考: [详解布隆过滤器的原理，使用场景和注意事项](https://zhuanlan.zhihu.com/p/43263751)
 
-
-
 ## 布隆过滤器bloom
 
 布隆过滤器，可以判断某元素在不在集合里面,因为存在一定的误判和删除复杂问题,一般的使用场景是:防止缓存击穿(防止恶意攻击)、 垃圾邮箱过滤、cache digests 、模型检测器等、判断是否存在某行数据,用以减少对磁盘访问，提高服务的访问性能。 go-zero 提供的简单的缓存封装 bloom.bloom，就是借助 redis bitmap (其实就是通过 redis string 来实现) 的 [setbit](https://redis.io/commands/setbit) 方法来实现 bloom。bloom filter 的数据结构如下：
@@ -26,7 +24,6 @@ type redisBitSet struct {
 	key   string						// 布隆过滤器的 key，也就是在 redis 中通过这个 key 来获取到布隆过滤器
 	bits  uint							// 一共可以用多少 bits 
 }
-
 ```
 
 简单使用方式如下：
@@ -163,11 +160,8 @@ func (r *redisBitSet) check(offsets []uint) (bool, error) {
 }
 ```
 
-
-
 ## 总结
 
 go-zero 的布隆过滤器就是通过 redis 的 bitmap 来实现的，默认使用 14 种 hash 算法，可以自定义一共使用多少位来存储。
 
-向 bloom 添加元素时需要使用 14 种 hash 算法将数据（[]byte 类型）hash 得出 14 个偏移量，再通过 redis  setbit 方法将 bitmap 对应偏移量位置的值设置为 1。检查 bloom 是否有某元素时也是一样，得出 14 个偏移量，再通过 redis getbit 方法来检查这 14 个位置是否都是 1，有一个位置不是 1 就表示不存在，都是 1 就表示存在。
-
+向 bloom 添加元素时需要使用 14 种 hash 算法将数据（\[]byte 类型）hash 得出 14 个偏移量，再通过 redis setbit 方法将 bitmap 对应偏移量位置的值设置为 1。检查 bloom 是否有某元素时也是一样，得出 14 个偏移量，再通过 redis getbit 方法来检查这 14 个位置是否都是 1，有一个位置不是 1 就表示不存在，都是 1 就表示存在。

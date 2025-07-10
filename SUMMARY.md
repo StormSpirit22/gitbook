@@ -42,7 +42,6 @@
 ## 中间件 <a href="#middleware" id="middleware"></a>
 
 * [Redis](middleware/redis/README.md)
-
   * [数据结构（简要）](middleware/redis/shu-ju-jie-gou-jian-yao.md)
   * [底层数据结构](middleware/redis/redis-di-ceng.md)
   * [数据结构（详细）](middleware/redis/redis-xue-xi-yi.md)
@@ -51,48 +50,39 @@
   * [事务/分布式锁](middleware/redis/shi-wu-fen-bu-shi-suo.md)
   * [集群](middleware/redis/ji-qun.md)
   * [常见面试题](middleware/redis/chang-jian-mian-shi-ti.md)
-
 * [MySQL](middleware/mysql/README.md)
   * [InnoDB](middleware/mysql/innodb.md)
   * [幻读问题](middleware/mysql/huan-du-wen-ti.md)
   * [Next-Key Lock 加锁范围](middleware/mysql/nextkey-lock-jia-suo-fan-wei.md)
   * [索引](middleware/mysql/suo-yin.md)
   * [分库分表/分布式 ID](middleware/mysql/fen-ku-fen-biao-fen-bu-shi-id.md)
-
 * [Kafka](middleware/kafka/README.md)
-
   * [Kafka 基础](middleware/kafka/kafka-ji-chu.md)
-
 * [Zookeeper](middleware/zookeeper/README.md)
-
   * [Zookeeper 基础](middleware/zookeeper/zookeeper-ji-chu.md)
   * [Zookeeper 面试题](middleware/zookeeper/zookeeper-mian-shi-ti.md)
-
 * [TiKV](middleware/tikv/README.md)
-
   * [TiKV](middleware/tikv/tikv.md)
-
 * [Etcd](middleware/etcd/README.md)
-
   * [etcd](middleware/etcd/etcd.md)
 
 ## 计算机网络 <a href="#network" id="network"></a>
-- [TCP](computer-netword/tcp/README.md)
-  * [TCP 基础](computer-network/tcp/tcp1.md) 
-  * [TCP 算法](computer-network/tcp/tcp2.md) 
-  * [TCP 三次挥手](computer-network/tcp/tcp3.md) 
-  * [TCP 粘包拆包](computer-network/tcp/tcp4.md) 
-  * [TCP KeepAlive](computer-network/tcp/tcp5.md) 
-  * [TCP 全连接队列和半连接队列](computer-network/tcp/tcp6.md) 
+
+* [TCP](network/tcp/README.md)
+  * [TCP 基础](computer-network/tcp/tcp1.md)
+  * [TCP 算法](computer-network/tcp/tcp2.md)
+  * [TCP 三次挥手](computer-network/tcp/tcp3.md)
+  * [TCP 粘包拆包](computer-network/tcp/tcp4.md)
+  * [TCP KeepAlive](computer-network/tcp/tcp5.md)
+  * [TCP 全连接队列和半连接队列](computer-network/tcp/tcp6.md)
 
 ## 微服务 <a href="#microservice" id="microservice"></a>
 
-- [Go-Zero](micro-service/go-zero/README.md)
+* [Go-Zero](micro-service/go-zero/README.md)
   * [布隆过滤器](micro-service/go-zero/bloom-filter.md)
   * [服务限流](micro-service/go-zero/ratelimit.md)
   * [服务熔断](micro-service/go-zero/fuse.md)
-
-- [高并发系统设计 40 问笔记](micro-service/high-concurrency/README.md)
+* [高并发系统设计 40 问笔记](micro-service/high-concurrency/README.md)
   * [基础](micro-service/high-concurrency/hc-basic.md)
   * [数据库](micro-service/high-concurrency/hc-db.md)
   * [缓存](micro-service/high-concurrency/hc-cache.md)
@@ -100,11 +90,8 @@
   * [分布式服务](micro-service/high-concurrency/hc-service.md)
   * [维护](micro-service/high-concurrency/hc-ops.md)
   * [实战](micro-service/high-concurrency/hc-design.md)
-- [设计模式](micro-service/design-pattern/README.md)
-  - [常用设计模式](micro-service/design-pattern/design-pattern.md)
-
-
-
+* [设计模式](micro-service/design-pattern/README.md)
+  * [常用设计模式](micro-service/design-pattern/design-pattern.md)
 
 ## MIT 6.824
 

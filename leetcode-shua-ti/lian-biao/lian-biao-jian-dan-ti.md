@@ -46,7 +46,7 @@
 
 那我们假设 `last := reverseList(head.Next)` 已经将 head.Next 及之后的节点都反转了，如下图所示：
 
-![](<../../.gitbook/assets/image (1) (1).png>)
+![](<../../.gitbook/assets/image (1) (1) (1).png>)
 
 由于该函数的定义是，**返回的节点是反转后的链表的头结点**，那么用 last 接收的值就是最后要返回的节点值。
 

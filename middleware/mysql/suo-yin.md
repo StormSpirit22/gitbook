@@ -18,7 +18,7 @@
 
 #### B+ 树
 
-![](<../../.gitbook/assets/index-1 (1).png>)
+![](../../.gitbook/assets/index-1.png)
 
 B 树与 B+ 树的最大区别就是，B 树可以在非叶结点中存储数据，但是 B+ 树的所有数据其实都存储在叶子节点中，
 
@@ -28,7 +28,7 @@ B 树与 B+ 树的最大区别就是，B 树可以在非叶结点中存储数据
 
 3、B+**树天然具备排序功能：B+树所有的叶子**节点数据构成了一个有序链表，在查询大小区间的数据时候更方便，数据紧密性很高，缓存的命中率也会比B树高。
 
-4、B+**树全节点遍历更快：B+树遍历整棵树只需要遍历所有的叶子**节点即可，，而不需要像B树一样需要对每一层进行遍历，这有利于数据库做[全表扫描](https://www.zhihu.com/search?q=%E5%85%A8%E8%A1%A8%E6%89%AB%E6%8F%8F\&search\_source=Entity\&hybrid\_search\_source=Entity\&hybrid\_search\_extra={%22sourceType%22%3A%22article%22%2C%22sourceId%22%3A27700617})。
+4、B+**树全节点遍历更快：B+树遍历整棵树只需要遍历所有的叶子**节点即可，，而不需要像B树一样需要对每一层进行遍历，这有利于数据库做[全表扫描](https://www.zhihu.com/search?q=%E5%85%A8%E8%A1%A8%E6%89%AB%E6%8F%8F\&search_source=Entity\&hybrid_search_source=Entity\&hybrid_search_extra=\{%22sourceType%22%3A%22article%22%2C%22sourceId%22%3A27700617})。
 
 B树相对于B+树的优点是，如果经常访问的数据离根节点很近，而B树的非叶子节点本身存有关键字其数据的地址，所以这种数据检索的时候会要比B+树快。
 
@@ -101,7 +101,7 @@ B 树能够在非叶节点中存储数据，但是这也导致在查询连续数
 
 就是 SQL 查询在执行过程中扫描的一个索引片段，在这个范围中的索引将被顺序扫描。
 
-![](../../.gitbook/assets/index-2.png)
+![](<../../.gitbook/assets/index-2 (1).png>)
 
 **宽索引**包含了所需的数据列不需要回表，**窄索引**没有包含 sql 查询的所有列就需要回表。
 
@@ -115,7 +115,7 @@ B 树能够在非叶节点中存储数据，但是这也导致在查询连续数
 
 过滤因子就是作为索引的列。比如 sex 这一列，只有男女两类数据，就不是一个好的过滤因子。所以**在一般情况下**我们最好不要使用 sex 列作为整个索引的第一列。而 name=“draven” 的使用就可以得到一个比较好的过滤因子了，它的使用能过滤整个数据表中 99.9% 的数据；当然我们也可以将这三个过滤进行组合，创建一个新的索引 (name, age, sex) 并同时使用这三列作为过滤条件：
 
-![](../../.gitbook/assets/index-3.png)
+![](<../../.gitbook/assets/index-3 (1).png>)
 
 当三个过滤条件都是等值谓词时，几个索引列的顺序其实是无所谓的，索引列的顺序不会影响同一个 SQL 语句对索引的选择，也就是索引 (name, age, sex) 和 (age, sex, name) 对于上图中的条件来说是完全一样的，这两个索引在执行查询时都有着完全相同的效果。
 
@@ -130,7 +130,7 @@ WHERE name = "draven" AND sex = "male" AND age > 20;
 
 name 和 sex 就是匹配列，age 就是过滤列。
 
-![](<../../.gitbook/assets/index-4 (1).png>)
+![](../../.gitbook/assets/index-4.png)
 
 ## 索引的设计
 
@@ -144,7 +144,7 @@ name 和 sex 就是匹配列，age 就是过滤列。
 2. 第二颗星需要将 ORDER BY 列加入索引中；
 3. 第三颗星需要将查询语句剩余的列全部加入到索引中；
 
-![](../../.gitbook/assets/index-5.png)
+![](<../../.gitbook/assets/index-5 (1).png>)
 
 三颗星的作用：
 
@@ -152,7 +152,7 @@ name 和 sex 就是匹配列，age 就是过滤列。
 2. 第二颗星用于避免排序，减少磁盘 IO 和内存的使用。
 3. 第三颗星用于避免回表。
 
-![](../../.gitbook/assets/index-6.png)
+![](<../../.gitbook/assets/index-6 (1).png>)
 
 比如以下 sql：
 
@@ -167,7 +167,7 @@ ORDER BY name;
 
 （比如下图还要对 name 这个列进行额外排序。）
 
-![](../../.gitbook/assets/index-8.png)
+![](<../../.gitbook/assets/index-8 (1).png>)
 
 ![Different-Stars-Index](../../.gitbook/assets/index-11.png)
 
@@ -177,20 +177,16 @@ ORDER BY name;
 
 总而言之，在设计单表的索引时，首先把查询中所有的**等值谓词全部取出**以任意顺序放在索引最前面，在这时，如果索引中同时存在范围索引和 ORDER BY 就需要权衡利弊了，希望最小化扫描的索引片厚度时，应该将**过滤因子最小的范围索引列**加入索引，如果希望避免排序就选择 **ORDER BY 中的全部列**，在这之后就只需要将查询中**剩余的全部列**加入索引了，通过这种固定的方法和逻辑就可以最快地获得一个查询语句的二星或者三星索引了。
 
-
-
 ## 其他
 
-- **负向查询**，主要是指 **not in,<>,not like** 等，因为如果查询条件中只有这类条件，会导致全表扫描。
-- **%xxx** 开头的模糊查询，会导致查询无法使用索引，全表扫描。
-- `select id from xxxx where from_unixtime(start_day)>='2018-08-14'` 会导致全表扫描，因为在字段前使用了函数。
--   正确写法 `select id from xxxx where start_day>=unix_timestamp('2018-08-14')`
-- `select id from xxx where phone = 12345678900` 一般情况下手机号推荐使用 varchar(32) 存储，因为会有地区等属性（+86），如果 phone 是 varchar 上面的写法会触发[隐式转换](https://dev.mysql.com/doc/refman/5.7/en/type-conversion.html?spm=5176.100239.blogcont47339.5.1FTben)，导致全表扫描，因为 12345678900 是数字类型，Mysql 检测到 phone 这个字段的查询类型是整型，就会全表扫描，将所有行的 phone 转换成整型，然后再做查询处理。（隐式转换的情况下，全表扫描一般是发生在字符类型字段，数字类型一般不会影响执行计划）。可参考 [Mysql 数据类型隐式转换规则](http://lanffy.github.io/2017/05/12/Mysql-Type-Conversion-Expression-Evalution) 。
-- `select * from table`
-  - 获取不必要的列会增加 cpu、io、net 消耗。
-  - 如果有覆盖索引的情况下，会导致无法有效利用覆盖索引。
-  - 程序开发过程中容易因为忘记添加、删除字段，导致出现 bug。
-- 分片库的场景下，查询不带分片键容易引起查询放大的问题，会造成所有分片做无效查询。
-- 还有一些 SQL 规范，包括但不限制于不允许在主库上执行统计 SQL (count\sum)，不允许大表使用 join、子查询，不允许超过 3 个表的 join 查询等。
-
- 
+* **负向查询**，主要是指 **not in,<>,not like** 等，因为如果查询条件中只有这类条件，会导致全表扫描。
+* **%xxx** 开头的模糊查询，会导致查询无法使用索引，全表扫描。
+* `select id from xxxx where from_unixtime(start_day)>='2018-08-14'` 会导致全表扫描，因为在字段前使用了函数。
+* 正确写法 `select id from xxxx where start_day>=unix_timestamp('2018-08-14')`
+* `select id from xxx where phone = 12345678900` 一般情况下手机号推荐使用 varchar(32) 存储，因为会有地区等属性（+86），如果 phone 是 varchar 上面的写法会触发[隐式转换](https://dev.mysql.com/doc/refman/5.7/en/type-conversion.html?spm=5176.100239.blogcont47339.5.1FTben)，导致全表扫描，因为 12345678900 是数字类型，Mysql 检测到 phone 这个字段的查询类型是整型，就会全表扫描，将所有行的 phone 转换成整型，然后再做查询处理。（隐式转换的情况下，全表扫描一般是发生在字符类型字段，数字类型一般不会影响执行计划）。可参考 [Mysql 数据类型隐式转换规则](http://lanffy.github.io/2017/05/12/Mysql-Type-Conversion-Expression-Evalution) 。
+* `select * from table`
+  * 获取不必要的列会增加 cpu、io、net 消耗。
+  * 如果有覆盖索引的情况下，会导致无法有效利用覆盖索引。
+  * 程序开发过程中容易因为忘记添加、删除字段，导致出现 bug。
+* 分片库的场景下，查询不带分片键容易引起查询放大的问题，会造成所有分片做无效查询。
+* 还有一些 SQL 规范，包括但不限制于不允许在主库上执行统计 SQL (count\sum)，不允许大表使用 join、子查询，不允许超过 3 个表的 join 查询等。

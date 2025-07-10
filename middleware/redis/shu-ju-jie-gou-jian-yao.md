@@ -1,4 +1,4 @@
-# 数据结构
+# 数据结构（简要）
 
 ## 基础数据结构
 
@@ -12,17 +12,17 @@
 
 示例图：
 
-![](<../../.gitbook/assets/datastructure-1 (1).png>)
+![](../../.gitbook/assets/datastructure-1.png)
 
 redis 3.2 及 3.2以前，代码结构：
 
-![](<../../.gitbook/assets/datastructure-2 (1).png>)
+![](../../.gitbook/assets/datastructure-2.png)
 
 3.2 之后定义了多种长度类型的 sds，代码结构：
 
-![](<../../.gitbook/assets/datastructure-3 (1).png>)
+![](../../.gitbook/assets/datastructure-3.png)
 
-![](../../.gitbook/assets/datastructure-4.png)
+![](<../../.gitbook/assets/datastructure-4 (1).png>)
 
 * len：sds 字符串的实际长度。
 * alloc： 分配给字符串的总容量，这个容量是不包含header和'\0'字符的容量，初始化的时候这个值和sds长度是一样的，当有修改的时候往往会分配大于实际需要用到的长度。
@@ -31,7 +31,7 @@ redis 3.2 及 3.2以前，代码结构：
 
 ### Hash
 
-![](../../.gitbook/assets/datastructure-5.png)
+![](<../../.gitbook/assets/datastructure-5 (1).png>)
 
 Redis中的每个hash可以存储 2^32个键值对。
 
@@ -119,7 +119,7 @@ skiplist由如下几个特点：
 
 redis跳跃表具体的实现如图所示：
 
-![](../../.gitbook/assets/datastructure-6.png)
+![](<../../.gitbook/assets/datastructure-6 (1).png>)
 
 实现方式：
 
@@ -136,7 +136,7 @@ redis跳跃表具体的实现如图所示：
 
 位图不是实际的数据类型，而是在String类型上定义的一组面向位的操作。由于字符串是二进制安全的，最大长度是512MB,转换成位可以设置 2^32不同的位。
 
-![](<../../.gitbook/assets/datastructure-7 (1).png>)
+![](../../.gitbook/assets/datastructure-7.png)
 
 Bitmap 提供了 `GETBIT、SETBIT` 操作，通过一个偏移值 offset 对 bit 数组的 offset 位置的 bit 位进行读写操作，需要注意的是 offset 从 0 开始。
 
@@ -178,7 +178,7 @@ Zset和geohash（Redis将所有地理位置信息的geohash存在zset中）。
 * PFCOUNT
 * PFMERGE
 
-![](<../../.gitbook/assets/datastructure-8 (1).png>)
+![](../../.gitbook/assets/datastructure-8.png)
 
 应用场景：
 
@@ -195,8 +195,6 @@ Radix tree
 应用场景：
 
 消息队列
-
-
 
 底层数据结构可参考（总结得很好）：
 

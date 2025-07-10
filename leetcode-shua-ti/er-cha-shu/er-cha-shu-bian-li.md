@@ -191,7 +191,6 @@ func levelOrderRecursiveHelper(root *TreeNode, level int) {
   levelOrderRecursiveHelper(root.Left, level + 1)
   levelOrderRecursiveHelper(root.Right, level + 1)
 }
-
 ```
 
 非递归代码：
