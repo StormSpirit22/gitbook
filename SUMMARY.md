@@ -83,6 +83,7 @@
   * [TCP 三次挥手](computer-network/tcp/tcp3.md) 
   * [TCP 粘包拆包](computer-network/tcp/tcp4.md) 
   * [TCP KeepAlive](computer-network/tcp/tcp5.md) 
+  * [TCP 全连接队列和半连接队列](computer-network/tcp/tcp6.md) 
 
 ## 微服务 <a href="#microservice" id="microservice"></a>
 
