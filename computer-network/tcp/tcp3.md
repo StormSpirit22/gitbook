@@ -63,7 +63,7 @@ int shutdown(int sockfd, int how);
 
 当被动关闭方（即服务端）在 TCP 挥手过程中，「**没有数据要发送」并且「开启了 TCP 延迟确认机制」，那么第二和第三次挥手就会合并传输，这样就出现了三次挥手。**
 
-![image-20240616193031493](../../gitbook/.gitbook/assets/tcp9.png)
+![tcp9](../../.gitbook/assets/tcp9.png)
 
 因为 TCP 延迟确认机制是默认开启的，所以导致我们抓包时，看见三次挥手的次数比四次挥手还多。
 
@@ -75,7 +75,7 @@ int shutdown(int sockfd, int how);
 - 当没有响应数据要发送时，ACK 将会延迟一段时间，以等待是否有响应数据可以一起发送
 - 如果在延迟等待发送 ACK 期间，对方的第二个数据报文又到达了，这时就会立刻发送 ACK
 
-<img src="../../.gitbook/assets/tcp10.png" alt="img" style="zoom: 67%;" />
+![tcp10](../../.gitbook/assets/tcp10.png)
 
 > 怎么关闭 TCP 延迟确认机制？
 
@@ -183,7 +183,7 @@ func main() {
 
 本地运行 wireshark 抓包，注意因为客户端和服务端都在本地运行，所以需要抓本机的回环包，需要开启这个：
 
-![image-20240616210633311](../../gitbook/.gitbook/assets/tcp11.png)
+![image-20240616210633311](../../.gitbook/assets/tcp11.png)
 
 macOS 运行的结果：
 
